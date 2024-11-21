@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashbord Admin</title>
+        <link rel="icon" href="../images/logopara.png" type="image/x-icon">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
+        <link rel="stylesheet" href="../Static/css/style.css">
+    </head>
+    <body>
+        <div class="container">
+
+            <div>
+                {% include 'Sidebar.html' %}
+            </div>
+
+            <main style="margin-left:3rem;">
+                <h1>Dashbord</h1>
+
+                <div class="date">
+                    <input type="date" id="currentDate">
+                </div>
+
+                <div class="insights">
+                    <div class="sales boxd" style="border-radius: 2rem; margin:2rem;">
+                        <span class="material-symbols-sharp">person_outline</span>
+                        <div class="middle">
+                            <div class="left">
+                                <h3>Total Abonnées</h3>
+                                <h1></h1>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="expenses boxd" style="border-radius: 2rem; margin:2rem;">
+                        <span class="material-symbols-sharp">category</span>
+                        <div class="middle">
+                            <div class="left">
+                                <h3>Total Catalogues</h3>
+                                <h1></h1>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="income boxd" style="border-radius: 2rem; margin:2rem;">
+                        <span class="material-symbols-sharp">library_books</span>
+                        <div class="middle">
+                            <div class="left">
+                                <h3>Total Emprunts</h3>
+                                <h1></h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <div>
+                {% include 'Navbar.html' %}
+            </div>
+        </div>
+
+        <script src="../Static/js/script.js"></script>
+    </body>
+</html>

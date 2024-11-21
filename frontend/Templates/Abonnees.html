@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashbord Admin</title>
+        <link rel="icon" href="../images/logopara.png" type="image/x-icon">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
+        <link rel="stylesheet" href="../Static/css/style.css">
+    </head>
+    <body>
+        <div class="container">
+
+            <div>
+                {% include 'Sidebar.html' %}
+            </div>
+
+            <main style="margin-left:3rem;">
+                <a href="" class="link">Categories</a>
+                <span class="arrow">&rarr;</span>
+                <a href="" class="link">List</a>
+                <h1>Categories</h1>
+    
+                <div class="recent_order">
+                    <div class="date">
+                        <input type="date" id="currentDate">
+                    </div>
+    
+                    <div class="addbutton">
+                        <a href="" class="add-category-link" style="margin:0px;">
+                            <span class="material-symbols-sharp" style="bottom:20px;">add </span>
+                            <h3>Add category</h3>
+                        </a>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category Name</th>
+                                <th>Images</th>
+                                <th>Slug</th>
+                                <th>Is Active</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+    
+                        <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <img src="" alt=""
+                                            style="width: 6vw; height: auto;">
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <span class="material-symbols-sharp icon-active">check_circle</span>
+                                       
+                                        <span class="material-symbols-sharp icon-inactive">cancel</span>
+                                       
+                                    </td>
+                                    <td class="primary">
+                                        <span class="material-symbols-sharp more-icon"
+                                            style="font-size: 2rem; padding-top: .2rem; padding-right: 1rem; font-variation-settings: 'wght' 900;">more_vert</span>
+                                        <div class="popup">
+    
+                                            <div class="action-icons ic1" style="">
+                                                <button id='openModal_all' class="view-button"
+                                                   >
+                                                    <span class="material-symbols-sharp"
+                                                        style="font-size: 1.7rem; padding-top:.2rem">visibility</span>
+                                                    <h3>View</h3>
+                                                </button>
+                                            </div>
+    
+                                            <div class="action-icons ic2" style=" ">
+                                                <button id='openModal' class="edit-button">
+                                                    <span class="material-symbols-sharp"
+                                                        style="font-size: 1.7rem; padding-top:.2rem">create</span>
+                                                    <h3>Edit</h3>
+                                                </button>
+    
+                                            </div>
+    
+                                            <div class="action-icons ic3" style="">
+                                                <form action=""
+                                                    method="POST">
+                                                   
+                                                    <button type="submit" class="delete-button">
+                                                        <span class="material-symbols-sharp"
+                                                            style="font-size: 1.7rem; padding-top:.2rem">delete</span>
+                                                        <h3>Delete</h3>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+
+            <div>
+                {% include 'Navbar.html' %}
+            </div>
+        </div>
+
+        <script src="../Static/js/script.js"></script>
+    </body>
+</html>
