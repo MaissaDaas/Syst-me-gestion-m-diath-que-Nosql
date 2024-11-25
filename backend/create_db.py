@@ -5,7 +5,7 @@ client = MongoClient("mongodb://localhost:27017/")
 db_name = "mybase"
 db = client[db_name]
 
-db.Abonnées.insert_one({
+db.abonne.insert_one({
     "name": "maissa", 
     "prenom": "daas", 
     "adresse": "test", 

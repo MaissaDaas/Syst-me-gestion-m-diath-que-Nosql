@@ -2,13 +2,14 @@ from flask import Blueprint, request, jsonify
 from pymongo import MongoClient
 
 client = MongoClient("mongodb://localhost:27017/")
-db = client["gestionabonnee"]
+db = client["mybase"]
 
 abonne_bp = Blueprint('abonne', __name__)
 
 @abonne_bp.route('/abonne', methods=['POST'])
 def create_abonne():
     data = request.json
+    print(data)
     db.abonne.insert_one(data)
     return jsonify({"message": "Abonné créé avec succès !"}), 201
 

@@ -1,6 +1,10 @@
 from flask import Flask, render_template
+from pymongo import MongoClient
 
 app = Flask(__name__,static_folder='frontend/Static',template_folder='frontend/Templates')
+
+client = MongoClient("mongodb://localhost:27017/")
+db = client["mybase"]
 
 @app.route('/dashboard')
 def home():
@@ -8,7 +12,9 @@ def home():
 
 @app.route('/abonnees')
 def abonnees():
-    return render_template('Abonnees.html') 
+    abonnes = list(db.abonne.find({}, {"_id": 0})) 
+    return render_template('Abonnees.html', abonnes=abonnes) 
+    # return render_template('Abonnees.html') 
 
 @app.route('/addabonnees')
 def addAbonnees():
