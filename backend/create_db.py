@@ -6,9 +6,10 @@ db_name = "mybase"
 db = client[db_name]
 
 db.abonne.insert_one({
-    "name": "maissa", 
+    "nom": "maissa", 
     "prenom": "daas", 
     "adresse": "test", 
+    "email": "test@gmail.com",
     "date_inscription": "19/11/2024", 
     "liste_emprunt_cours": "test", 
     "historique_emprunt": "test"

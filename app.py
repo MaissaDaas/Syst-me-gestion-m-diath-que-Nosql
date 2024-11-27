@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 from pymongo import MongoClient
 
 app = Flask(__name__,static_folder='frontend/Static',template_folder='frontend/Templates')
@@ -14,11 +14,42 @@ def home():
 def abonnees():
     abonnes = list(db.abonne.find({}, {"_id": 0})) 
     return render_template('Abonnees.html', abonnes=abonnes) 
-    # return render_template('Abonnees.html') 
 
-@app.route('/addabonnees')
+# @app.route('/addabonnees', methods=['POST'])
+# def addAbonnees():
+#     return render_template('AddAbonnees.html')
+#     data = {
+#         "nom": request.form.get("nom"),
+#         "prenom": request.form.get("prenom"),
+#         "email": request.form.get("email"),
+#         "adresse": request.form.get("adresse"),
+#         "liste_emprunt_cours": request.form.get("liste_emprunt_cours"),
+#         "historique_emprunt": request.form.get("historique_emprunt"),
+#         "date_inscription": request.form.get("date_inscription")
+#     }
+
+@app.route('/addabonnees', methods=['GET', 'POST'])
 def addAbonnees():
-    return render_template('AddAbonnees.html') 
+    if request.method == 'POST':
+        # Collecting data from the form
+        data = {
+            "nom": request.form.get("nom"),
+            "prenom": request.form.get("prenom"),
+            "email": request.form.get("email"),
+            "adresse": request.form.get("adresse"),
+            "liste_emprunt_cours": request.form.get("liste_emprunt_cours"),
+            "historique_emprunt": request.form.get("historique_emprunt"),
+            "date_inscription": request.form.get("date_inscription")
+        }
+        
+        # Insert data into the MongoDB collection
+        db.abonne.insert_one(data)
+        
+        # Redirect to the abonnes page after successfully adding the abonne
+        return redirect(url_for('abonnees'))
+    
+    # If it's a GET request, just render the form
+    return render_template('AddAbonnees.html')
 
 @app.route('/catalogues')
 def catalogues():

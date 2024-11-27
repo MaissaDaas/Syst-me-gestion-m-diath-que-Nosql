@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter Abonné</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="icon" href="../images/logopara.png" type="image/x-icon">
+    <link rel="stylesheet" href="../Static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div>
+            {% include 'Sidebar.html' %}
+        </div>
+
+        <main style="margin-left:3rem;">
+            <a href="/abonnees" class="link">Abonnés</a>
+            <span class="arrow">&rarr;</span>
+            <a href="/addabonnees" class="link">Ajouter Abonné</a>
+            <h1>Ajouter Abonné</h1>
+
+            <div class="recent_order">
+                <div class="date">
+                    <input type="date" id="currentDate">
+                </div>
+
+                <form id="addAbonneForm" action="/addabonnees" method="POST" class="add_form">
+                    <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Nom</h3>
+                            <input type="text" required class="add__input" id="nom" name="nom" value="">
+                        </div>
+                        <div class="add__box">
+                            <h3 class="add_h">Prénom</h3>
+                            <input type="text" required class="add__input" id="prenom" name="prenom" value="">
+                        </div>
+                    </div>
+
+                    <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Email</h3>
+                            <input type="email" required class="add__input" id="email" name="email" value="">
+                        </div>
+                        <div class="add__box">
+                            <h3 class="add_h">Adresse</h3>
+                            <input required class="add__input" id="adresse" name="adresse">
+                        </div>
+                    </div>
+                    
+                    <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Date Inscription</h3>
+                            <input type="date" class="add__input" id="date_inscription" name="date_inscription">
+                        </div>
+                    </div>
+
+                    <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Liste d'emprunt en cours</h3>
+                            <input required class="add__input" id="liste_emprunt_cours" name="liste_emprunt_cours">
+                        </div>
+                    </div>
+
+                    <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Historique d'emprunts</h3>
+                            <input required class="add__input" id="historique_emprunt" name="historique_emprunt">
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="add__button">Ajouter</button>
+                        <button type="button" class="cancel__button" onclick="">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <div>
+            {% include 'Navbar.html' %}
+        </div>
+    </div>
+
+    <script src="../Static/js/script.js"></script>
+</body>
+</html>

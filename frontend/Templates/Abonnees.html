@@ -17,31 +17,35 @@
             </div>
 
             <main style="margin-left:3rem;">
-                <a href="" class="link">Abonnées</a>
+                <a href="/abonnees" class="link">Abonnées</a>
                 <span class="arrow">&rarr;</span>
-                <a href="" class="link">List</a>
+                <a href="/abonnees" class="link">List</a>
                 <h1>Abonnées</h1>
     
                 <div class="recent_order">
-                    <div class="date">
-                        <input type="date" id="currentDate">
+                    <div class="header-order-add">
+                        <div class="date">
+                            <input type="date" id="currentDate">
+                        </div>
+        
+                        <div class="addbutton">
+                            <a href="/addabonnees" class="add-category-link" style="margin:0px;">
+                                <span class="material-symbols-sharp">add </span>
+                                <h3>Ajouter Abonnée</h3>
+                            </a>
+                        </div>
                     </div>
-    
-                    <div class="addbutton">
-                        <a href="" class="add-category-link" style="margin:0px;">
-                            <span class="material-symbols-sharp" style="bottom:20px;">add </span>
-                            <h3>Ajouter Abonnées</h3>
-                        </a>
-                    </div>
+                   
                     <table>
                         <thead>
                             <tr>
                                 <th>Nom</th>
                                 <th>Prenom</th>
+                                <th>Email</th>
                                 <th>Adresse</th>
                                 <th>Date Inscription</th>
-                                <th>Liste Emprunt Cours</th>
-                                <th>Historique Emprunt</th>
+                                <th>Liste d'emprunt en cours</th>
+                                <th>Historique d'emprunts</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -49,15 +53,47 @@
                         <tbody>
                             {% for abonne in abonnes %}
                             <tr>
-                                <td>{{ abonne.name }}</td>
+                                <td>{{ abonne.nom }}</td>
                                 <td>{{ abonne.prenom }}</td>
+                                <td>{{ abonne.email }}</td>
                                 <td>{{ abonne.adresse }}</td>
                                 <td>{{ abonne.date_inscription if abonne.date_inscription else '-' }}</td>
                                 <td>{{ abonne.liste_emprunt_cours if abonne.liste_emprunt_cours else '-' }}</td>
                                 <td>{{ abonne.historique_emprunt if abonne.historique_emprunt else '-' }}</td>
-                                <td class="primary">
-                                    <!-- <span class="material-symbols-sharp icon-active">check_circle</span>
-                                    <span class="material-symbols-sharp icon-inactive">cancel</span> -->
+                                <td >
+                                    <span class="material-symbols-sharp more-icon"
+                                        style="font-size: 1.6rem; font-variation-settings: 'wght' 900;">more_vert</span>
+                                    <div class="popup">
+
+                                        <div class="action-icons ic1" >
+                                            <button id='openModal_all' class="view-button">
+                                                <span class="material-symbols-sharp"
+                                                    style="font-size: 1.7rem; padding-top:.2rem">visibility</span>
+                                                <h3>View</h3>
+                                            </button>
+                                        </div>
+
+                                        <div class="action-icons ic2" >
+                                            <button id='openModal' class="edit-button">
+                                                <span class="material-symbols-sharp"
+                                                    style="font-size: 1.7rem; padding-top:.2rem">create</span>
+                                                <h3>Edit</h3>
+                                            </button>
+
+                                        </div>
+
+                                        <div class="action-icons ic3" style="">
+                                            <form action=""
+                                                method="POST">
+                                        
+                                                <button type="submit" class="delete-button">
+                                                    <span class="material-symbols-sharp"
+                                                        style="font-size: 1.7rem; padding-top:.2rem">delete</span>
+                                                    <h3>Delete</h3>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
