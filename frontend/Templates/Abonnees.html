@@ -5,13 +5,12 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Dashbord Admin</title>
-        <link rel="icon" href="../images/logopara.png" type="image/x-icon">
+        <link rel="icon" href="../Static/images/book2.png" type="image/x-icon">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
         <link rel="stylesheet" href="../Static/css/style.css">
     </head>
     <body>
         <div class="container">
-
             <div>
                 {% include 'Sidebar.html' %}
             </div>
@@ -60,37 +59,83 @@
                                 <td>{{ abonne.date_inscription if abonne.date_inscription else '-' }}</td>
                                 <td>{{ abonne.liste_emprunt_cours if abonne.liste_emprunt_cours else '-' }}</td>
                                 <td>{{ abonne.historique_emprunt if abonne.historique_emprunt else '-' }}</td>
-                                <td >
-                                    <span class="material-symbols-sharp more-icon"
-                                        style="font-size: 1.6rem; font-variation-settings: 'wght' 900;">more_vert</span>
+                                <td class="primary">
+                                    <span class="material-symbols-sharp more-icon" style="font-size: 1.6rem; font-variation-settings: 'wght' 900;">more_vert</span>
                                     <div class="popup">
-
-                                        <div class="action-icons ic1" >
-                                            <button id='openModal_all' class="view-button">
-                                                <span class="material-symbols-sharp"
-                                                    style="font-size: 1.7rem; padding-top:.2rem">visibility</span>
-                                                <h3>View</h3>
-                                            </button>
-                                        </div>
-
                                         <div class="action-icons ic2" >
-                                            <button id='openModal' class="edit-button">
-                                                <span class="material-symbols-sharp"
-                                                    style="font-size: 1.7rem; padding-top:.2rem">create</span>
-                                                <h3>Edit</h3>
+                                            <button id="openModal" class="edit-button" data-email="{{ abonne.email }}">
+                                                <span class="material-symbols-sharp" style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">create</span>
+                                                <h3>Modifier</h3>
                                             </button>
-
+                                            
                                         </div>
 
-                                        <div class="action-icons ic3" style="">
-                                            <form action=""
-                                                method="POST">
-                                        
+                                        <div class="action-icons ic3" >
+                                            <form action="{{ url_for('delete_abonne', email=abonne.email) }}" method="POST">
                                                 <button type="submit" class="delete-button">
                                                     <span class="material-symbols-sharp"
-                                                        style="font-size: 1.7rem; padding-top:.2rem">delete</span>
-                                                    <h3>Delete</h3>
+                                                    style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">delete</span>
+                                                    <h3>Supprimer</h3> 
                                                 </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <!-- ******************************edit modal******************* -->
+                                    <div class="modal" id="modal_{{ abonne.email }}">
+                                        <div class="modal-content">
+                                            <span class="close">&times;</span>
+                                            <h1>Modifier Abonné</h1>
+
+                                            <form action="{{ url_for('update_abonne', email=abonne.email) }}" method="POST" class="add_form">
+                                                <div class="add__inputs">
+                                                    <div class="add__box">
+                                                        <h3 class="add_h_edit">Nom</h3>
+                                                        <input type="text" required class="add__input" id="nom" name="nom" value="{{ abonne.nom }}">
+                                                    </div>
+
+                                                    <div class="add__box">
+                                                        <h3 class="add_h_edit">Prénom</h3>
+                                                        <input type="text" required class="add__input" id="prenom" name="prenom" value="{{ abonne.prenom }}">
+                                                    </div>
+                                                </div>
+                                               
+                                                <div class="add__inputs">
+                                                    <div class="add__box">
+                                                        <h3 class="add_h_edit">Email</h3>
+                                                        <input type="email" required class="add__input" id="email" name="email" disabled value="{{ abonne.email }}">
+                                                    </div>
+
+                                                    <div class="add__box">
+                                                        <h3 class="add_h_edit">Adresse</h3>
+                                                        <input required class="add__input" id="adresse" name="adresse" value="{{ abonne.adresse }}">
+                                                    </div>
+                                                </div>
+                                                <div class="add__inputs">
+                                                    <div class="add__box">
+                                                        <h3 class="add_h_edit">Date Inscription</h3>
+                                                        <input type="date" class="add__input" id="date_inscription" name="date_inscription"  value="{{ abonne.date_inscription }}">
+                                                    </div>
+                                                </div>
+
+                                                <div class="add__inputs">
+                                                    <div class="add__box">
+                                                        <h3 class="add_h_edit">Liste d'emprunt en cours</h3>
+                                                        <input required class="add__input" id="liste_emprunt_cours" name="liste_emprunt_cours" value="{{ abonne.liste_emprunt_cours }}">
+                                                    </div>
+                                                </div>
+
+                                                <div class="add__inputs">
+                                                    <div class="add__box">
+                                                        <h3 class="add_h_edit">Historique d'emprunts</h3>
+                                                        <input required class="add__input" id="historique_emprunt" name="historique_emprunt" value="{{ abonne.historique_emprunt }}">
+                                                    </div>
+                                                </div>
+
+                                                <div class="button-group" style="padding-bottom:10px;">
+                                                    <button type="submit" class="add__button">Modifier</button>
+                                                    <button type="button" class="cancel__button">Annuler</button>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>

@@ -6,27 +6,8 @@ db = client["mybase"]
 
 abonne_bp = Blueprint('abonne', __name__)
 
-# @abonne_bp.route('/abonne', methods=['POST'])
-# def create_abonne():
-#     data = request.json
-
-#     if not data:
-#         return jsonify({"error": "Aucune donnée fournie"}), 400
-
-#     if not data.get("email"):
-#         return jsonify({"error": "L'email est requis."}), 400
-
-#     existing_abonne = db.abonne.find_one({"email": data.get("email")})
-
-#     if existing_abonne:
-#         return jsonify({"error": "Un abonné avec cet email existe déjà."}), 409
-
-#     db.abonne.insert_one(data)
-#     return jsonify({"message": "Abonné créé avec succès !"}), 201
-
 @app.route('/addabonnees', methods=['POST'])
 def create_abonne():
-    # Récupérer les données du formulaire
     data = {
         "nom": request.form.get("nom"),
         "prenom": request.form.get("prenom"),
@@ -37,18 +18,15 @@ def create_abonne():
         "date_inscription": request.form.get("date_inscription")
     }
 
-    # Validation des données
     if not data["email"]:
         return jsonify({"error": "L'email est requis."}), 400
 
-    # Vérifier si l'email existe déjà
     existing_abonne = db.abonne.find_one({"email": data["email"]})
     if existing_abonne:
         return jsonify({"error": "Un abonné avec cet email existe déjà."}), 409
 
-    # Ajouter l'abonné à la base de données
     db.abonne.insert_one(data)
-    return redirect(url_for('abonnees'))  # Rediriger vers la page des abonnés après l'ajout
+    return redirect(url_for('abonnees'))  
 
 
 @abonne_bp.route('/abonne', methods=['GET'])
@@ -69,7 +47,7 @@ def update_abonne(adresse):
 
     return jsonify({"message": "Abonné mis à jour avec succès !"}), 200
 
-@abonne_bp.route('/abonne/<nom>', methods=['DELETE'])
-def delete_abonne(nom):
-    db.abonne.delete_one({"nom": nom})
+@abonne_bp.route('/abonne/<email>', methods=['DELETE'])
+def delete_abonne(email):
+    db.abonne.delete_one({"email": email})
     return jsonify({"message": "Abonné supprimé avec succès !"}), 200

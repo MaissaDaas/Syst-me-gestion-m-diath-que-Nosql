@@ -8,30 +8,27 @@ db = client["mybase"]
 
 @app.route('/dashboard')
 def home():
-    return render_template('Dashboard.html')
+    total_abonnes = db.abonne.count_documents({}) 
+    return render_template('Dashboard.html' , total_abonnes=total_abonnes)
 
 @app.route('/abonnees')
 def abonnees():
     abonnes = list(db.abonne.find({}, {"_id": 0})) 
     return render_template('Abonnees.html', abonnes=abonnes) 
 
-# @app.route('/addabonnees', methods=['POST'])
-# def addAbonnees():
-#     return render_template('AddAbonnees.html')
-#     data = {
-#         "nom": request.form.get("nom"),
-#         "prenom": request.form.get("prenom"),
-#         "email": request.form.get("email"),
-#         "adresse": request.form.get("adresse"),
-#         "liste_emprunt_cours": request.form.get("liste_emprunt_cours"),
-#         "historique_emprunt": request.form.get("historique_emprunt"),
-#         "date_inscription": request.form.get("date_inscription")
-#     }
+@app.route('/delete_abonne/<email>', methods=['POST'])
+def delete_abonne(email):
+    result = db.abonne.delete_one({"email": email})
+    
+    if result.deleted_count == 0:
+        return "Aucun abonné trouvé avec cet email.", 404
+
+    return redirect(url_for('abonnees'))
+
 
 @app.route('/addabonnees', methods=['GET', 'POST'])
 def addAbonnees():
     if request.method == 'POST':
-        # Collecting data from the form
         data = {
             "nom": request.form.get("nom"),
             "prenom": request.form.get("prenom"),
@@ -42,14 +39,39 @@ def addAbonnees():
             "date_inscription": request.form.get("date_inscription")
         }
         
-        # Insert data into the MongoDB collection
         db.abonne.insert_one(data)
         
-        # Redirect to the abonnes page after successfully adding the abonne
-        return redirect(url_for('abonnees'))
-    
-    # If it's a GET request, just render the form
+        return redirect(url_for('abonnees'))    
     return render_template('AddAbonnees.html')
+
+@app.route('/abonne/<email>', methods=['POST'])
+def update_abonne(email):
+    nom = request.form.get('nom')
+    prenom = request.form.get('prenom')
+    adresse = request.form.get('adresse')
+    liste_emprunt_cours = request.form.get('liste_emprunt_cours')
+    historique_emprunt = request.form.get('historique_emprunt')
+    date_inscription = request.form.get('date_inscription')
+
+    abonne = db.abonne.find_one({"email": email})
+    
+    if not abonne:
+        return jsonify({"error": "Abonné introuvable"}), 404
+
+    db.abonne.update_one(
+        {"email": email},
+        {"$set": {
+            "nom": nom,
+            "prenom": prenom,
+            "adresse": adresse,
+            "liste_emprunt_cours": liste_emprunt_cours,
+            "historique_emprunt": historique_emprunt,
+            "date_inscription": date_inscription
+        }}
+    )
+
+    return redirect(url_for('abonnees'))  
+
 
 @app.route('/catalogues')
 def catalogues():
