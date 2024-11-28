@@ -71,7 +71,7 @@
                                         </div>
 
                                         <div class="action-icons ic3" >
-                                            <form action="{{ url_for('delete_abonne', email=abonne.email) }}" method="POST">
+                                            <form action="/delete_abonne/{{ abonne.email }}" method="POST">
                                                 <button type="submit" class="delete-button">
                                                     <span class="material-symbols-sharp"
                                                     style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">delete</span>
@@ -87,7 +87,7 @@
                                             <span class="close">&times;</span>
                                             <h1>Modifier Abonné</h1>
 
-                                            <form action="{{ url_for('update_abonne', email=abonne.email) }}" method="POST" class="add_form">
+                                            <form  action="/update_abonne/{{ abonne.email }}" method="POST" class="add_form">
                                                 <div class="add__inputs">
                                                     <div class="add__box">
                                                         <h3 class="add_h_edit">Nom</h3>
@@ -103,7 +103,7 @@
                                                 <div class="add__inputs">
                                                     <div class="add__box">
                                                         <h3 class="add_h_edit">Email</h3>
-                                                        <input type="email" required class="add__input" id="email" name="email" disabled value="{{ abonne.email }}">
+                                                        <input type="email" required class="add__input" id="email" name="email" value="{{ abonne.email }}">
                                                     </div>
 
                                                     <div class="add__box">

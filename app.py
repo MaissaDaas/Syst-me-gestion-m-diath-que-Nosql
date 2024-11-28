@@ -44,7 +44,7 @@ def addAbonnees():
         return redirect(url_for('abonnees'))    
     return render_template('AddAbonnees.html')
 
-@app.route('/abonne/<email>', methods=['POST'])
+@app.route('/update_abonne/<email>', methods=['POST'])
 def update_abonne(email):
     nom = request.form.get('nom')
     prenom = request.form.get('prenom')
