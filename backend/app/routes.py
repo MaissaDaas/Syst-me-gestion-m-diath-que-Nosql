@@ -6,33 +6,38 @@ db = client["mybase"]
 
 abonne_bp = Blueprint('abonne', __name__)
 
-@abonne_bp.route('/addabonnees', methods=['POST'])
-def create_abonne():
-    data = {
-        "nom": request.form.get("nom"),
-        "prenom": request.form.get("prenom"),
-        "email": request.form.get("email"),
-        "adresse": request.form.get("adresse"),
-        "liste_emprunt_cours": request.form.get("liste_emprunt_cours"),
-        "historique_emprunt": request.form.get("historique_emprunt"),
-        "date_inscription": request.form.get("date_inscription")
-    }
+# @abonne_bp.route('/addabonnees', methods=['POST'])
+# def create_abonne():
+#     data = {
+#         "nom": request.form.get("nom"),
+#         "prenom": request.form.get("prenom"),
+#         "email": request.form.get("email"),
+#         "adresse": request.form.get("adresse"),
+#         "liste_emprunt_cours": request.form.get("liste_emprunt_cours"),
+#         "historique_emprunt": request.form.get("historique_emprunt"),
+#         "date_inscription": request.form.get("date_inscription")
+#     }
 
-    if not data["email"]:
-        return jsonify({"error": "L'email est requis."}), 400
+#     if not data["email"]:
+#         return jsonify({"error": "L'email est requis."}), 400
 
-    existing_abonne = db.abonne.find_one({"email": data["email"]})
-    if existing_abonne:
-        return jsonify({"error": "Un abonné avec cet email existe déjà."}), 409
+#     existing_abonne = db.abonne.find_one({"email": data["email"]})
+#     if existing_abonne:
+#         return jsonify({"error": "Un abonné avec cet email existe déjà."}), 409
 
-    db.abonne.insert_one(data)
-    return redirect(url_for('abonnees'))  
+#     db.abonne.insert_one(data)
+#     return redirect(url_for('abonnees'))  
 
 
 @abonne_bp.route('/abonne', methods=['GET'])
 def get_abonnes():
     abonnes = list(db.abonne.find({}, {"_id": 0}))
     return jsonify(abonnes), 200
+
+@abonne_bp.route('/emprunt', methods=['GET'])
+def get_Emprunts():
+    Emprunts = list(db.Emprunts.find({}, {"_id": 0}))
+    return jsonify(Emprunts), 200
 
 @abonne_bp.route('/abonne/<email>', methods=['PUT'])
 def update_abonne(email):

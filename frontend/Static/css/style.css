@@ -685,6 +685,16 @@ input[type="file"].add__input {
   font-size: 0.75rem;
 }
 
+.error-message {
+  color: #d9534f; 
+  background-color: #f2dede; 
+  border: 1px solid #ebccd1; 
+  padding: 10px;
+  margin-top: 10px;
+  display: none; 
+  border-radius: 4px;
+}
+
 .add__button, .cancel__button, .bacK__button {
   padding: 0.5rem 1rem;
   border: none;
@@ -736,6 +746,10 @@ input[type="file"].add__input {
   text-align: start;
 }
 
+.add__inputs input[type="radio"] {
+  margin-right: 10px; /* Espace entre le bouton et le texte */
+  vertical-align: middle; /* Aligner correctement avec le texte */
+}
 /* ******************* modal ******************** */
 
 .modal {
@@ -753,7 +767,7 @@ input[type="file"].add__input {
 }
 
 .modal-content {
-  background-color: #fefefe;
+  background-color: var(--clr-white);
   padding: 20px;
   border: 1px solid #888;
   display: flex;
@@ -776,7 +790,7 @@ input[type="file"].add__input {
   position: absolute;
   top: 10px;
   right: 25px;
-  color: #aaaaaa;
+  color: var(--clr-dark);
   float: right;
   font-size: 40px;
   font-weight: bold;

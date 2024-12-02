@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter Emprunt</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="icon" href="../Static/images/book2.png" type="image/x-icon">
+    <link rel="stylesheet" href="../Static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div>
+            {% include 'Sidebar.html' %}
+        </div>
+
+        <main style="margin-left:3rem;">
+            <a href="/emprunts" class="link">Emprunt</a>
+            <span class="arrow">&rarr;</span>
+            <a href="/addemprunts" class="link">Ajouter Emprunt</a>
+            <h1>Ajouter Emprunt</h1>
+
+            <div class="recent_order">
+                <div class="date">
+                    <input type="date" id="currentDate">
+                </div>
+
+                <div id="error-message" class="error-message"></div>
+
+                <form id="addCataloguesForm" action="/addemprunts" method="POST" class="add_form">
+                    <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Abonnée</h3>
+                            <select class="add__input" id="abonne" name="abonne" required>
+                                <option value="" disabled selected>Sélectionnez un abonné</option>
+                                {% for abonne in abonnes %}
+                                    <option value="{{ abonne.nom }} {{ abonne.prenom }}">{{ abonne.nom }} {{ abonne.prenom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Document Emprunté</h3>
+                            <select class="add__input" id="document_emprunte" name="document_emprunte" required>
+                                <option value="" disabled selected>Sélectionnez un document</option>
+                                {% for catalogue in catalogues %}
+                                    <option value="{{ catalogue.titre }}">{{ catalogue.titre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Date d'emprunt</h3>
+                            <input type="date" required class="add__input" id="date_emprunt" name="date_emprunt" value="">
+                        </div>
+                    </div>
+
+                    <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Date de retour prévue</h3>
+                            <input type="date" class="add__input" id="date_retour" name="date_retour">
+                        </div>
+                    </div>
+
+                    <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Statut de l'emprunt</h3>
+                            <select class="add__input" id="statut_emprunt" name="statut_emprunt" required>
+                                <option value="" disabled selected>Choisir un statut</option>
+                                <option value="En cours">En cours</option>
+                                <option value="Retardé">Retardé</option>
+                                <option value="Rendu">Rendu</option>
+                                <option value="Annulé">Annulé</option>
+                                <option value="Réservé">Réservé</option>
+                            </select>
+                        </div>
+                    </div>                    
+
+                    <div class="button-group">
+                        <button type="submit" class="add__button">Ajouter</button>
+                        <button type="button" class="cancel__button" onclick="">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <div>
+            {% include 'Navbar.html' %}
+        </div>
+    </div>
+
+    <script src="../Static/js/script.js"></script>
+    <script>
+        document.getElementById('addCataloguesForm').addEventListener('submit', function(event) {
+            // Récupérer les valeurs des deux dates
+            var dateEmprunt = document.getElementById('date_emprunt').value;
+            var dateRetour = document.getElementById('date_retour').value;
+            
+            // Vérifier si les deux dates sont définies
+            if (dateEmprunt && dateRetour) {
+                // Convertir les dates en objets Date pour comparaison
+                var empruntDate = new Date(dateEmprunt);
+                var retourDate = new Date(dateRetour);
+                
+                // Vérifier si la date de retour est avant ou égale à la date d'emprunt
+                if (retourDate <= empruntDate) {
+                    document.getElementById('error-message').textContent = "La date de retour prévue doit être postérieure à la date d'emprunt.";
+                    document.getElementById('error-message').style.display = 'block'; // Afficher le message d'erreur
+                    event.preventDefault(); // Empêcher l'envoi du formulaire
+                }
+            }
+        });
+    </script>
+    
+</body>
+</html>
