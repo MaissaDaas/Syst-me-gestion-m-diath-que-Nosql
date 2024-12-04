@@ -378,6 +378,7 @@ main .insights .progress .number{
 
 /* recent order */
 .header-order-add {
+  display: flex;
   justify-content: space-between;
 }
 
@@ -653,7 +654,7 @@ Right Side
   border: 1px solid #ececef;
   border-radius: 0.25rem;
   box-sizing: border-box;
-  color: #677483;
+  color: var(--clr-dark-variant);
   transition: border-color 0.3s ease; 
 }
 
@@ -731,7 +732,7 @@ input[type="file"].add__input {
 }
 
 .add_h{
-  color: #677483;
+  color: var(--clr-dark-variant);
   font-weight: 750;
   font-size: 0.9rem;
   padding-bottom: 10px;
@@ -1127,12 +1128,10 @@ h4 {
   margin-left: 5px;
 }
 
-
 .link {
   color: #6B7280; 
   text-decoration: none; 
   font-size: 14px; 
-  /* font-weight: bold;  */
 }
 
 .arrow {
@@ -1241,6 +1240,162 @@ MEDIA QUERY
       display: grid;
       grid-template-columns: repeat(1,1fr);
     }
+}
+
+/********************************/
+.liste-td {
+  padding: 10px;
+}
+
+.liste-ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.liste-li {
+  background-color: var(--clr-color-background);
+  margin: 5px 0;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.liste-li:hover {
+  background-color: #dcdcdc;
+  cursor: pointer;
+}
+
+.liste-td:empty {
+  color: #999;
+  font-style: italic;
+}
+
+.modal-details {
+  display: none; 
+  position: fixed;
+  z-index: 1000; 
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); 
+  overflow: auto; 
+}
+
+.modal-content-details {
+  background-color: var(--clr-white);
+  margin: 8% auto;
+  padding: 3rem;
+  border: 1px solid #888;
+  width: 40%; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.modal-content-details h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0 0 2rem;
+  color: var(--clr-h3);
+  font-weight: 800;
+  font-size: 1.75rem;
+}
+
+.modal-content-details p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: start;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var( --clr-dark);
+  margin-bottom: 1.5rem;
+}
+
+.modal-content-details p span {
+  padding-left: 1rem;
+  color:var(--clr-dark-variant);
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+/*********** search bar ******************** */
+.title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.title-search {
+  display: flex;
+  align-items: center;
+  gap: 10rem;
+}
+
+.search-form {
+  width: 0;
+  margin-left: 1rem;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width:18rem;
+  margin-left: 6rem;
+}
+  
+.search-input {
+  width: 100%;
+  padding: 0.5rem 1.5rem 0.5rem 1rem; 
+  font-size: .9rem;
+  border: var(--border-radius-3);
+  border-radius: 2rem;
+  outline: none;
+  background-color: var(--clr-color-background);
+  transition: all 0.3s ease-in-out;
+}
+
+.search-input:focus {
+  border-color: #555;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  right: 1rem;
+  font-size: 1.3rem;
+  color: #aaa;
+  cursor: pointer;
+  pointer-events: none; 
 }
 
 /* ****************

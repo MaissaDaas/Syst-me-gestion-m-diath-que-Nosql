@@ -8,75 +8,6 @@
         <link rel="icon" href="../Static/images/book2.png" type="image/x-icon">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
         <link rel="stylesheet" href="../Static/css/style.css">
-    
-        <style>
-            .liste-td {
-                padding: 10px;
-            }
-
-            .liste-ul {
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-            }
-
-            .liste-li {
-                background-color: #dce1eb;
-                margin: 5px 0;
-                padding: 5px;
-                border-radius: 4px;
-                transition: background-color 0.3s ease;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-            }
-
-            .liste-li:hover {
-                background-color: #dcdcdc;
-                cursor: pointer;
-            }
-
-            .liste-td:empty {
-                color: #999;
-                font-style: italic;
-            }
-
-            .modal-details {
-                display: none; 
-                position: fixed;
-                z-index: 1;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                overflow: auto;
-                background-color: rgba(0, 0, 0, 0.4);
-                padding-top: 60px;
-            }
-
-            .modal-content-details {
-                background-color: #fefefe;
-                margin: 5% auto;
-                padding: 20px;
-                border: 1px solid #888;
-                width: 80%;
-            }
-
-            .close {
-                color: #aaa;
-                float: right;
-                font-size: 28px;
-                font-weight: bold;
-            }
-
-            .close:hover,
-            .close:focus {
-                color: black;
-                text-decoration: none;
-                cursor: pointer;
-            }
-        </style>
     </head>
 
     <body>
@@ -96,6 +27,14 @@
                         <div class="date">
                             <input type="date" id="currentDate">
                         </div>
+                        
+                        <form action="/search_abonnees" method="GET" class="search-form">
+                            <div class="search-container">
+                                <input type="text" placeholder="Chercher un abonné..." class="search-input" id="searchInput">
+    
+                                <span class="material-symbols-sharp search-icon">search</span>
+                            </div>
+                        </form>
         
                         <div class="addbutton">
                             <a href="/addabonnees" class="add-category-link" style="margin:0px;">
@@ -105,7 +44,7 @@
                         </div>
                     </div>
                    
-                    <table>
+                    <table id="abonnesTable">
                         <thead>
                             <tr>
                                 <th>Nom</th>
@@ -127,140 +66,114 @@
                                 <td>{{ abonne.email }}</td>
                                 <td>{{ abonne.adresse }}</td>
                                 <td>{{ abonne.date_inscription if abonne.date_inscription else '-' }}</td>
-                                <!-- <td class="liste-td">
-                                    {% if abonne.emprunts_en_cours %}
-                                        <ul class="liste-ul">
-                                            {% for emprunt in abonne.emprunts_en_cours %}
-                                                <li class="liste-li">{{ emprunt }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% else %}
-                                        Aucun emprunt en cours
-                                    {% endif %}
-                                </td> -->
-                                
+
                                 <td class="liste-td">
                                     {% if abonne.emprunts_en_cours %}
-                                        <ul class="liste-ul">
-                                            {% for emprunt in abonne.emprunts_en_cours %}
-                                                <li class="liste-li" onclick="openEmpruntDetailsModal('{{ emprunt }}')">{{ emprunt }}</li>
-                                            {% endfor %}
-                                        </ul>
+                                    <ul class="liste-ul">
+                                        {% for emprunt in abonne.emprunts_en_cours %}
+                                        <li class="liste-li">
+                                            <span class="toggle-details" 
+                                                data-id="{{ emprunt.document_emprunte }}" 
+                                                data-date-emprunt="{{ emprunt.date_emprunt }}" 
+                                                data-date-retour="{{ emprunt.date_retour }}" 
+                                                data-statut-emprunt="{{ emprunt.statut_emprunt }}">
+                                                {{ emprunt.document_emprunte }}
+                                            </span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
                                     {% else %}
                                         Aucun emprunt en cours
                                     {% endif %}
-
-
-                                    <div id="empruntDetailsModal" class="modal-details">
-                                        <div class="modal-content-details">
-                                            <span class="close" onclick="closeModal()">&times;</span>
-                                            <h2>Détails de l'Emprunt</h2>
-                                            <table>
-                                                <tr>
-                                                    <th>Abonné</th>
-                                                    <td id="abonneDetails"></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Date d'Emprunt</th>
-                                                    <td id="dateEmprunt"></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Date de Retour</th>
-                                                    <td id="dateRetour"></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Document Emprunté</th>
-                                                    <td id="documentEmprunte"></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Statut</th>
-                                                    <td id="statutEmprunt"></td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    
+                                
+                                    <hr>
                                 </td>
-                                   
-                                <td>{{ abonne.historique_emprunt if abonne.historique_emprunt else '-' }}</td>
-                                <td class="primary">
-                                    <span class="material-symbols-sharp more-icon" style="font-size: 1.6rem; font-variation-settings: 'wght' 900;">more_vert</span>
-                                    <div class="popup">
-                                        <div class="action-icons ic2" >
-                                            <button id="openModal" class="edit-button" data-email="{{ abonne.email }}">
-                                                <span class="material-symbols-sharp" style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">create</span>
-                                                <h3>Modifier</h3>
-                                            </button>
-                                            
-                                        </div>
-
-                                        <div class="action-icons ic3" >
-                                            <form action="/delete_abonne/{{ abonne.email }}" method="POST">
-                                                <button type="submit" class="delete-button">
-                                                    <span class="material-symbols-sharp"
-                                                    style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">delete</span>
-                                                    <h3>Supprimer</h3> 
+                                <td class="liste-td">
+                                    {% if abonne.tous_les_emprunts %}
+                                    <ul class="liste-ul">
+                                        {% for emprunt in abonne.tous_les_emprunts %}
+                                        <li class="liste-li">
+                                            <span class="toggle-details" 
+                                                data-id="{{ emprunt.document_emprunte }}" 
+                                                data-date-emprunt="{{ emprunt.date_emprunt }}" 
+                                                data-date-retour="{{ emprunt.date_retour }}" 
+                                                data-statut-emprunt="{{ emprunt.statut_emprunt }}">
+                                                {{ emprunt.document_emprunte }}
+                                            </span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% else %}
+                                        Aucun emprunt
+                                    {% endif %}
+                                </td>
+                                
+                                <td >
+                                    <div class="primary">
+                                        <span class="material-symbols-sharp more-icon" style="font-size: 1.6rem; font-variation-settings: 'wght' 900;">more_vert</span>
+                                        <div class="popup">
+                                            <div class="action-icons ic2" >
+                                                <button id="openModal" class="edit-button" data-email="{{ abonne.email }}">
+                                                    <span class="material-symbols-sharp" style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">create</span>
+                                                    <h3>Modifier</h3>
                                                 </button>
-                                            </form>
+                                                
+                                            </div>
+
+                                            <div class="action-icons ic3" >
+                                                <form action="/delete_abonne/{{ abonne.email }}" method="POST">
+                                                    <button type="submit" class="delete-button">
+                                                        <span class="material-symbols-sharp"
+                                                        style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">delete</span>
+                                                        <h3>Supprimer</h3> 
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- ******************************edit modal******************* -->
-                                    <div class="modal" id="modal_{{ abonne.email }}">
-                                        <div class="modal-content">
-                                            <span class="close">&times;</span>
-                                            <h1>Modifier Abonné</h1>
+                                        <!-- ******************************edit modal******************* -->
+                                        <div class="modal" id="modal_{{ abonne.email }}">
+                                            <div class="modal-content">
+                                                <span class="close">&times;</span>
+                                                <h1>Modifier Abonné</h1>
 
-                                            <form  action="/update_abonne/{{ abonne.email }}" method="POST" class="add_form">
-                                                <div class="add__inputs">
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Nom</h3>
-                                                        <input type="text" required class="add__input" id="nom" name="nom" value="{{ abonne.nom }}">
+                                                <form  action="/update_abonne/{{ abonne.email }}" method="POST" class="add_form">
+                                                    <div class="add__inputs">
+                                                        <div class="add__box">
+                                                            <h3 class="add_h_edit">Nom</h3>
+                                                            <input type="text" required class="add__input" id="nom" name="nom" value="{{ abonne.nom }}">
+                                                        </div>
+
+                                                        <div class="add__box">
+                                                            <h3 class="add_h_edit">Prénom</h3>
+                                                            <input type="text" required class="add__input" id="prenom" name="prenom" value="{{ abonne.prenom }}">
+                                                        </div>
+                                                    </div>
+                                                
+                                                    <div class="add__inputs">
+                                                        <div class="add__box">
+                                                            <h3 class="add_h_edit">Email</h3>
+                                                            <input type="email" required class="add__input" id="email" name="email" value="{{ abonne.email }}">
+                                                        </div>
+
+                                                        <div class="add__box">
+                                                            <h3 class="add_h_edit">Adresse</h3>
+                                                            <input required class="add__input" id="adresse" name="adresse" value="{{ abonne.adresse }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="add__inputs">
+                                                        <div class="add__box">
+                                                            <h3 class="add_h_edit">Date Inscription</h3>
+                                                            <input type="date" class="add__input" id="date_inscription" name="date_inscription"  value="{{ abonne.date_inscription }}">
+                                                        </div>
                                                     </div>
 
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Prénom</h3>
-                                                        <input type="text" required class="add__input" id="prenom" name="prenom" value="{{ abonne.prenom }}">
+                                                    <div class="button-group" style="padding-bottom:10px;">
+                                                        <button type="submit" class="add__button">Modifier</button>
+                                                        <button type="button" class="cancel__button">Annuler</button>
                                                     </div>
-                                                </div>
-                                               
-                                                <div class="add__inputs">
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Email</h3>
-                                                        <input type="email" required class="add__input" id="email" name="email" value="{{ abonne.email }}">
-                                                    </div>
-
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Adresse</h3>
-                                                        <input required class="add__input" id="adresse" name="adresse" value="{{ abonne.adresse }}">
-                                                    </div>
-                                                </div>
-                                                <div class="add__inputs">
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Date Inscription</h3>
-                                                        <input type="date" class="add__input" id="date_inscription" name="date_inscription"  value="{{ abonne.date_inscription }}">
-                                                    </div>
-                                                </div>
-
-                                                <div class="add__inputs">
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Liste d'emprunt en cours</h3>
-                                                        <input required class="add__input" id="liste_emprunt_cours" name="liste_emprunt_cours" value="{{ abonne.liste_emprunt_cours }}">
-                                                    </div>
-                                                </div>
-
-                                                <div class="add__inputs">
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Historique d'emprunts</h3>
-                                                        <input required class="add__input" id="historique_emprunt" name="historique_emprunt" value="{{ abonne.historique_emprunt }}">
-                                                    </div>
-                                                </div>
-
-                                                <div class="button-group" style="padding-bottom:10px;">
-                                                    <button type="submit" class="add__button">Modifier</button>
-                                                    <button type="button" class="cancel__button">Annuler</button>
-                                                </div>
-                                            </form>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -277,33 +190,49 @@
         </div>
 
         <script>
-            function openEmpruntDetailsModal(emprunt) {
+            document.querySelectorAll('.toggle-details').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    // Récupérer les données de l'emprunt à partir des attributs data
+                    const documentEmprunte = link.getAttribute('data-id');
+                    const dateEmprunt = link.getAttribute('data-date-emprunt');
+                    const dateRetour = link.getAttribute('data-date-retour');
+                    const statutEmprunt = link.getAttribute('data-statut-emprunt');
 
-                var empruntDetails = {
-                abonne: "Maissa Daas", // Exemple de données
-                dateEmprunt: "2024-12-02",
-                dateRetour: "2024-12-08",
-                documentEmprunte: emprunt,
-                statutEmprunt: "En cours"
-                };
+                    // Remplir la modale avec ces informations
+                    const modalContent = `
+                        <h3>Détails de l'Emprunt</h3>
+                        <p>Document Emprunté : <span>${documentEmprunte}</span></p>
+                        <p>Date Emprunt : <span>${dateEmprunt}</span></p>
+                        <p>Date Retour : <span>${dateRetour}</span></p>
+                        <p>Statut Emprunt : <span>${statutEmprunt}</span></p>
+                    `;
 
-                // Remplir les champs du modal avec les données de l'emprunt
-                document.getElementById("abonneDetails").textContent = empruntDetails.abonne;
-                document.getElementById("dateEmprunt").textContent = empruntDetails.dateEmprunt;
-                document.getElementById("dateRetour").textContent = empruntDetails.dateRetour;
-                document.getElementById("documentEmprunte").textContent = empruntDetails.documentEmprunte;
-                document.getElementById("statutEmprunt").textContent = empruntDetails.statutEmprunt;
+                    // Afficher la modale avec les informations
+                    const modal = document.createElement('div');
+                    modal.classList.add('modal-details');
+                    modal.innerHTML = `
+                        <div class="modal-content-details">
+                            <span class="close" onclick="closeModal()">&times;</span>
+                            ${modalContent}
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
 
-                // Afficher le modal
-                document.getElementById("empruntDetailsModal").style.display = "block";
-            }
+                    // Afficher la modale
+                    modal.style.display = "block";
+                });
+            });
 
+            // Fonction pour fermer la modale
             function closeModal() {
-            // Cacher le modal lorsque l'utilisateur clique sur la croix
-            document.getElementById("empruntDetailsModal").style.display = "none";
+                const modal = document.querySelector('.modal-details');
+                if (modal) {
+                    modal.style.display = "none";
+                    modal.remove();
+                }
             }
-            
         </script>
+        
         <script src="../Static/js/script.js"></script>
     </body>
 </html>

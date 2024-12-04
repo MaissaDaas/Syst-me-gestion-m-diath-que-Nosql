@@ -30,26 +30,34 @@
             </div>
 
             <main style="margin-left:3rem;">
-                <a href="/catalogues" class="link">Documents</a>
+                <a href="/catalogues" class="link">Livres</a>
                 <span class="arrow">&rarr;</span>
                 <a href="/catalogues" class="link">List</a>
-                <h1>Documents</h1>
+                <h1>Livres</h1>
     
                 <div class="recent_order">
                     <div class="header-order-add">
                         <div class="date">
                             <input type="date" id="currentDate">
                         </div>
+
+                        <form action="/search_abonnees" method="GET" class="search-form">
+                            <div class="search-container">
+                                <input type="text" placeholder="Chercher un livre..." class="search-input" id="searchInput">
+    
+                                <span class="material-symbols-sharp search-icon">search</span>
+                            </div>
+                        </form>
         
                         <div class="addbutton">
                             <a href="/addcatalogues" class="add-category-link" style="margin:0px;">
                                 <span class="material-symbols-sharp">add </span>
-                                <h3>Ajouter Document</h3>
+                                <h3>Ajouter Livre</h3>
                             </a>
                         </div>
                     </div>
                    
-                    <table>
+                    <table id="abonnesTable">
                         <thead>
                             <tr>
                                 <th>Titre</th>
@@ -124,7 +132,8 @@
                                                 <div class="add__inputs">
                                                     <div class="add__box">
                                                         <h3 class="add_h_edit">Disponibilite</h3>
-                                                        <select required class="add__input" id="disponibilite" name="disponibilite" value="{{ catalogue.disponibilite }}">
+                                                        <select class="add__input" id="disponibilite" name="disponibilite" required>
+                                                            <option value="{{ catalogue.disponibilite }}" selected>{{ catalogue.disponibilite }}</option>
                                                             <option value="disponible">Disponible</option>
                                                             <option value="indisponible">Indisponible</option>
                                                         </select>

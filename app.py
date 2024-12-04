@@ -15,32 +15,55 @@ def home():
 
 
 # **************************** Abonnees  ****************************** 
-
 @app.route('/abonnees')
 def abonnees():
+    # Récupérer tous les abonnés
     abonnes = list(db.abonne.find({}, {"_id": 0}))
     print("Abonnés récupérés :", abonnes)
 
-    emprunts_en_cours = list(db.Emprunts.find({"statut_emprunt": "En cours"}, {"_id": 0}))
-    print("Emprunts en cours récupérés :", emprunts_en_cours)
-    
-    emprunts_par_abonne = {}
-    for emprunt in emprunts_en_cours:
-        print("Traitement de l'emprunt :", emprunt)
-        abonne_complet = emprunt.get("abonne", "").strip()
-        if abonne_complet:  
-            if abonne_complet not in emprunts_par_abonne:
-                emprunts_par_abonne[abonne_complet] = []
-            emprunts_par_abonne[abonne_complet].append(emprunt.get("document_emprunte"))
-    
-    for abonne in abonnes:
-        nom_complet = abonne["nom"] + " " + abonne["prenom"]  
-        print("Nom complet de l'abonné :", nom_complet)
-        abonne["emprunts_en_cours"] = emprunts_par_abonne.get(nom_complet, [])
-        print("Emprunts en cours pour cet abonné :", abonne["emprunts_en_cours"])
-    
-    return render_template('Abonnees.html', abonnes=abonnes)
+    # Récupérer tous les emprunts
+    tous_les_emprunts = list(db.Emprunts.find({}, {"_id": 0}))
+    print("Tous les emprunts récupérés :", tous_les_emprunts)
 
+    # Organiser les emprunts par abonné
+    emprunts_par_abonne = {}
+    for emprunt in tous_les_emprunts:
+        abonne_complet = emprunt.get("abonne", "").strip()
+        if abonne_complet:
+            if abonne_complet not in emprunts_par_abonne:
+                emprunts_par_abonne[abonne_complet] = {"en_cours": [], "tous": []}
+            # Ajouter les emprunts en cours
+            if emprunt.get("statut_emprunt") == "En cours":
+                emprunts_par_abonne[abonne_complet]["en_cours"].append({
+                    "document_emprunte": emprunt.get("document_emprunte"),
+                    "date_emprunt": emprunt.get("date_emprunt"),
+                    "date_retour": emprunt.get("date_retour"),
+                    "statut_emprunt": emprunt.get("statut_emprunt"),
+                })
+            # Ajouter tous les emprunts
+            emprunts_par_abonne[abonne_complet]["tous"].append({
+                "document_emprunte": emprunt.get("document_emprunte"),
+                "date_emprunt": emprunt.get("date_emprunt"),
+                "date_retour": emprunt.get("date_retour"),
+                "statut_emprunt": emprunt.get("statut_emprunt"),
+            })
+
+    # Associer les emprunts à chaque abonné
+    for abonne in abonnes:
+        nom_complet = f"{abonne['nom']} {abonne['prenom']}"
+        emprunts = emprunts_par_abonne.get(nom_complet, {"en_cours": [], "tous": []})
+        abonne["emprunts_en_cours"] = emprunts["en_cours"]
+        abonne["tous_les_emprunts"] = emprunts["tous"]
+        print(f"Emprunts pour {nom_complet} - En cours : {abonne['emprunts_en_cours']} - Tous : {abonne['tous_les_emprunts']}")
+
+    # Détails d'un emprunt spécifique (si nécessaire)
+    document_emprunte = request.args.get('document_emprunte')
+    if document_emprunte:
+        emprunt_details = db.Emprunts.find_one({"document_emprunte": document_emprunte})
+    else:
+        emprunt_details = None
+
+    return render_template('Abonnees.html', abonnes=abonnes, emprunt_details=emprunt_details)
 
 @app.route('/delete_abonne/<email>', methods=['POST'])
 def delete_abonne(email):
@@ -164,28 +187,6 @@ def emprunts():
     abonnes = list(db.abonne.find({}, {"_id": 0, "nom": 1, "prenom": 1}))
     documents = list(db.Catalogues.find({}, {"_id": 0, "titre": 1}))
     return render_template('Emprunts.html', emprunts=emprunts, abonnes=abonnes, documents=documents)
-
-@app.route('/emprunt_details', methods=['POST'])
-def emprunt_details():
-    document_emprunte = request.json.get('document_emprunte') 
-    emprunt = db.Emprunts.find_one({"document_emprunte": document_emprunte}, {"_id": 0})
-    
-    if not emprunt:
-        return jsonify({"error": "Emprunt non trouvé"}), 404
-    
-    abonne = db.abonne.find_one({"_id": emprunt.get("abonne")}, {"_id": 0, "nom": 1, "prenom": 1})
-    
-    document_emprunte_details = db.Catalogues.find_one({"titre": emprunt.get("document_emprunte")}, {"_id": 0, "titre": 1})
-    
-    emprunt_details = {
-        "abonne": abonne,
-        "document_emprunte": document_emprunte_details,
-        "date_emprunt": emprunt.get("date_emprunt"),
-        "date_retour": emprunt.get("date_retour"),
-        "statut_emprunt": emprunt.get("statut_emprunt")
-    }
-    
-    return jsonify(emprunt_details)
 
 @app.route('/delete_emprunt/<document_emprunte>', methods=['POST'])
 def delete_emprunt(document_emprunte):
