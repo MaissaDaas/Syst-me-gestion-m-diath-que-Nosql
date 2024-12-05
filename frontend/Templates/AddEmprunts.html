@@ -47,11 +47,31 @@
                             <select class="add__input" id="document_emprunte" name="document_emprunte" required>
                                 <option value="" disabled selected>Sélectionnez un document</option>
                                 {% for catalogue in catalogues %}
-                                    <option value="{{ catalogue.titre }}">{{ catalogue.titre }}</option>
+                                    {% if catalogue.disponibilite == 'disponible' %}
+                            
+                                
+                                        <option value="{{ catalogue.titre }}">{{ catalogue.titre }}</option>
+                                    {% endif %}
+
                                 {% endfor %}
                             </select>
                         </div>
                     </div>
+
+                    <!-- <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Document Emprunté</h3>
+                            <select class="add__input" id="document_emprunte" name="document_emprunte" required>
+                                <option value="" disabled selected>Sélectionnez un document</option>
+                                {% for catalogue in catalogues %}
+                                    {% if catalogue.disponibilite == "disponible" %}
+                                        <option value="{{ catalogue.titre }}">{{ catalogue.titre }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div> -->
+                    
                     
                     <div class="add__inputs">
                         <div class="add__box">

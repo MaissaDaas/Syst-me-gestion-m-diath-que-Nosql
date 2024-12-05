@@ -237,7 +237,7 @@ def addEmprunts():
         return redirect(url_for('emprunts'))  
 
     abonnes = list(db.abonne.find({}, {"_id": 0, "nom": 1, "prenom": 1}))
-    catalogues = list(db.Catalogues.find({}, {"_id": 0, "titre": 1}))
+    catalogues = list(db.Catalogues.find({}, {"_id": 0, "titre": 1, "disponibilite":5}))
     return render_template('AddEmprunts.html', abonnes=abonnes , catalogues=catalogues)
 
  

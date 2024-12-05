@@ -77,7 +77,9 @@
                     <table id="abonnesTable">
                         <thead>
                             <tr>
-                                <th>Abonne</th>
+                                <th>Abonne
+                                    <!-- <input type="text" id="filter_abonne" class="filter-input" placeholder="Filtrer par abonné" /> -->
+                                </th>
                                 <th>Document Emprunté</th>
                                 <th>Date d'emprunt</th>
                                 <th>Date de retour prévue</th>
@@ -98,25 +100,27 @@
                                         <span class="payment_status-{{ emprunt.statut_emprunt | lower | replace(' ', '-') | trim }}"> {{ emprunt.statut_emprunt }}</span>
                                     </label>
                                 </td>
-                                <td class="primary">
-                                    <span class="material-symbols-sharp more-icon" style="font-size: 1.6rem; font-variation-settings: 'wght' 900;">more_vert</span>
-                                    <div class="popup">
-                                        <div class="action-icons ic2" >
-                                            <button id="openModal" class="edit-button" data-email="{{ emprunt.document_emprunte }}">
-                                                <span class="material-symbols-sharp" style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">create</span>
-                                                <h3>Modifier</h3>
-                                            </button>
-                                            
-                                        </div>
-
-                                        <div class="action-icons ic3" >
-                                            <form action="/delete_emprunt/{{ emprunt.document_emprunte }}" method="POST">
-                                                <button type="submit" class="delete-button">
-                                                    <span class="material-symbols-sharp"
-                                                    style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">delete</span>
-                                                    <h3>Supprimer</h3> 
+                                <td >
+                                    <div class="primary">
+                                        <span class="material-symbols-sharp more-icon" style="font-size: 1.6rem; font-variation-settings: 'wght' 900;">more_vert</span>
+                                        <div class="popup">
+                                            <div class="action-icons ic2" >
+                                                <button id="openModal" class="edit-button" data-email="{{ emprunt.document_emprunte }}">
+                                                    <span class="material-symbols-sharp" style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">create</span>
+                                                    <h3>Modifier</h3>
                                                 </button>
-                                            </form>
+                                                
+                                            </div>
+
+                                            <div class="action-icons ic3" >
+                                                <form action="/delete_emprunt/{{ emprunt.document_emprunte }}" method="POST">
+                                                    <button type="submit" class="delete-button">
+                                                        <span class="material-symbols-sharp"
+                                                        style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">delete</span>
+                                                        <h3>Supprimer</h3> 
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -202,6 +206,42 @@
                 {% include 'Navbar.html' %}
             </div>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+    const filterInputs = document.querySelectorAll('.filter-input');
+    const tbody = document.getElementById('emprunts_tbody');
+
+    // Ajoute un écouteur d'événement sur chaque champ de filtre
+    filterInputs.forEach(input => {
+        input.addEventListener('input', function () {
+            const filters = {
+                abonne: document.getElementById('filter_abonne').value.toLowerCase(),
+                document: document.getElementById('filter_document').value.toLowerCase(),
+                date_emprunt: document.getElementById('filter_date_emprunt').value,
+                date_retour: document.getElementById('filter_date_retour').value,
+                statut: document.getElementById('filter_statut').value.toLowerCase(),
+            };
+
+            // Parcourt toutes les lignes du tableau
+            Array.from(tbody.rows).forEach(row => {
+                const cells = row.cells;
+                const matches = [
+                    !filters.abonne || cells[0].textContent.toLowerCase().includes(filters.abonne),
+                    !filters.document || cells[1].textContent.toLowerCase().includes(filters.document),
+                    !filters.date_emprunt || cells[2].textContent === filters.date_emprunt,
+                    !filters.date_retour || cells[3].textContent === filters.date_retour,
+                    !filters.statut || cells[4].textContent.toLowerCase().includes(filters.statut),
+                ];
+
+                // Affiche ou masque la ligne en fonction des conditions
+                row.style.display = matches.every(Boolean) ? '' : 'none';
+            });
+        });
+    });
+});
+
+        </script>
 
         <script src="../Static/js/script.js"></script>
     </body>
