@@ -73,11 +73,11 @@
                                         {% for emprunt in abonne.emprunts_en_cours %}
                                         <li class="liste-li">
                                             <span class="toggle-details" 
-                                                data-id="{{ emprunt.document_emprunte }}" 
+                                                data-id="{{ emprunt.document_emprunte.titre }}" 
                                                 data-date-emprunt="{{ emprunt.date_emprunt }}" 
                                                 data-date-retour="{{ emprunt.date_retour }}" 
                                                 data-statut-emprunt="{{ emprunt.statut_emprunt }}">
-                                                {{ emprunt.document_emprunte }}
+                                                {{ emprunt.document_emprunte.titre }}
                                             </span>
                                         </li>
                                         {% endfor %}
@@ -94,11 +94,11 @@
                                         {% for emprunt in abonne.tous_les_emprunts %}
                                         <li class="liste-li">
                                             <span class="toggle-details" 
-                                                data-id="{{ emprunt.document_emprunte }}" 
+                                                data-id="{{ emprunt.document_emprunte.titre }}" 
                                                 data-date-emprunt="{{ emprunt.date_emprunt }}" 
                                                 data-date-retour="{{ emprunt.date_retour }}" 
                                                 data-statut-emprunt="{{ emprunt.statut_emprunt }}">
-                                                {{ emprunt.document_emprunte }}
+                                                {{ emprunt.document_emprunte.titre }}
                                             </span>
                                         </li>
                                         {% endfor %}

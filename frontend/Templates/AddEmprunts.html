@@ -31,11 +31,29 @@
                 <form id="addCataloguesForm" action="/addemprunts" method="POST" class="add_form">
                     <div class="add__inputs">
                         <div class="add__box">
-                            <h3 class="add_h">Abonnée</h3>
+                            <h3 class="add_h">Code Emprunt</h3>
+                            <input type="text" required class="add__input" id="code_emprunt" name="code_emprunt" value="">
+                        </div>
+
+                        <div class="add__box">
+                            <h3 class="add_h">Statut de l'emprunt</h3>
+                            <select class="add__input" id="statut_emprunt" name="statut_emprunt" required>
+                                <option value="" disabled selected>Choisir un statut</option>
+                                <option value="En cours">En cours</option>
+                                <option value="Retardé">Retardé</option>
+                                <option value="Rendu">Rendu</option>
+                                <option value="Annulé">Annulé</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="add__inputs">
+                        <div class="add__box">
+                            <h3 class="add_h">Abonné</h3>
                             <select class="add__input" id="abonne" name="abonne" required>
                                 <option value="" disabled selected>Sélectionnez un abonné</option>
                                 {% for abonne in abonnes %}
-                                    <option value="{{ abonne.nom }} {{ abonne.prenom }}">{{ abonne.nom }} {{ abonne.prenom }}</option>
+                                    <option value="{{ abonne['_id'] }}">{{ abonne['nom'] }} {{ abonne['prenom'] }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -48,57 +66,25 @@
                                 <option value="" disabled selected>Sélectionnez un document</option>
                                 {% for catalogue in catalogues %}
                                     {% if catalogue.disponibilite == 'disponible' %}
-                            
-                                
-                                        <option value="{{ catalogue.titre }}">{{ catalogue.titre }}</option>
+                                        <option value="{{ catalogue._id}}">{{ catalogue.titre }}</option>
                                     {% endif %}
 
                                 {% endfor %}
                             </select>
                         </div>
                     </div>
-
-                    <!-- <div class="add__inputs">
-                        <div class="add__box">
-                            <h3 class="add_h">Document Emprunté</h3>
-                            <select class="add__input" id="document_emprunte" name="document_emprunte" required>
-                                <option value="" disabled selected>Sélectionnez un document</option>
-                                {% for catalogue in catalogues %}
-                                    {% if catalogue.disponibilite == "disponible" %}
-                                        <option value="{{ catalogue.titre }}">{{ catalogue.titre }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div> -->
-                    
                     
                     <div class="add__inputs">
                         <div class="add__box">
                             <h3 class="add_h">Date d'emprunt</h3>
                             <input type="date" required class="add__input" id="date_emprunt" name="date_emprunt" value="">
                         </div>
-                    </div>
 
-                    <div class="add__inputs">
                         <div class="add__box">
                             <h3 class="add_h">Date de retour prévue</h3>
                             <input type="date" class="add__input" id="date_retour" name="date_retour">
                         </div>
-                    </div>
-
-                    <div class="add__inputs">
-                        <div class="add__box">
-                            <h3 class="add_h">Statut de l'emprunt</h3>
-                            <select class="add__input" id="statut_emprunt" name="statut_emprunt" required>
-                                <option value="" disabled selected>Choisir un statut</option>
-                                <option value="En cours">En cours</option>
-                                <option value="Retardé">Retardé</option>
-                                <option value="Rendu">Rendu</option>
-                                <option value="Annulé">Annulé</option>
-                            </select>
-                        </div>
-                    </div>                    
+                    </div>                 
 
                     <div class="button-group">
                         <button type="submit" class="add__button">Ajouter</button>

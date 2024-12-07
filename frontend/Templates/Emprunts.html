@@ -91,8 +91,8 @@
                         <tbody>
                             {% for emprunt in emprunts %}
                             <tr>
-                                <td>{{ emprunt.abonne }}</td>
-                                <td>{{ emprunt.document_emprunte }}</td>
+                                <td>{{ emprunt.abonne.nom }} {{ emprunt.abonne.prenom }}</td>
+                                <td>{{ emprunt.document_emprunte.titre }}</td>
                                 <td>{{ emprunt.date_emprunt }}</td>
                                 <td>{{ emprunt.date_retour }}</td>
                                 <td>
@@ -105,7 +105,7 @@
                                         <span class="material-symbols-sharp more-icon" style="font-size: 1.6rem; font-variation-settings: 'wght' 900;">more_vert</span>
                                         <div class="popup">
                                             <div class="action-icons ic2" >
-                                                <button id="openModal" class="edit-button" data-email="{{ emprunt.document_emprunte }}">
+                                                <button id="openModal" class="edit-button" data-email="{{ emprunt.code_emprunt }}">
                                                     <span class="material-symbols-sharp" style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">create</span>
                                                     <h3>Modifier</h3>
                                                 </button>
@@ -113,7 +113,7 @@
                                             </div>
 
                                             <div class="action-icons ic3" >
-                                                <form action="/delete_emprunt/{{ emprunt.document_emprunte }}" method="POST">
+                                                <form action="/delete_emprunt/{{ emprunt.code_emprunt }}" method="POST">
                                                     <button type="submit" class="delete-button">
                                                         <span class="material-symbols-sharp"
                                                         style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">delete</span>
@@ -125,23 +125,24 @@
                                     </div>
 
                                     <!-- ******************************edit modal******************* -->
-                                    <div class="modal" id="modal_{{ emprunt.document_emprunte }}">
+                                    <div class="modal" id="modal_{{ emprunt.code_emprunt }}">
                                         <div class="modal-content">
                                             <span class="close">&times;</span>
                                             <h1>Modifier Emprunt</h1>
 
-                                            <form  action="/update_emprunt/{{ emprunt.document_emprunte }}" method="POST" class="add_form">    
+                                            <form  action="/update_emprunt/{{ emprunt.code_emprunt }}" method="POST" class="add_form">    
                                                 <div class="add__inputs">
                                                     <div class="add__box">
-                                                        <h3 class="add_h_edit">Abonnée</h3>
+                                                        <h3 class="add_h_edit">Abonné</h3>
                                                         <select class="add__input" id="abonne" name="abonne" required>
-                                                            <option value="{{ emprunt.abonne }}" selected>{{ emprunt.abonne }}</option>
+                                                            <option value="{{ emprunt.abonne._id }}" selected>{{ emprunt.abonne.nom }} {{ emprunt.abonne.prenom }}</option>
                                                             {% for abonne in abonnes %}
-                                                                {% if abonne.nom != emprunt.abonne %}
-                                                                    <option value="{{ abonne.nom }} {{ abonne.prenom }}">{{ abonne.nom }} {{ abonne.prenom }}</option>
+                                                                {% if abonne._id != emprunt.abonne._id %}
+                                                                    <option value="{{ emprunt.abonne._id }}">{{ abonne.nom }} {{ abonne.prenom }}</option>
                                                                 {% endif %}
                                                             {% endfor %}
                                                         </select>
+                                                        
                                                     </div>
                                                 </div>
 
@@ -149,13 +150,17 @@
                                                     <div class="add__box">
                                                         <h3 class="add_h_edit">Document Emprunté</h3>
                                                         <select class="add__input" id="document_emprunte" name="document_emprunte" required>
-                                                            <option value="{{ emprunt.document_emprunte }}" selected>{{ emprunt.document_emprunte }}</option>
+                                                            <option value="{{ emprunt.document_emprunte._id }}" selected>{{ emprunt.document_emprunte.titre }}</option>
                                                             {% for document in documents %}
-                                                                {% if document.titre != emprunt.document_emprunte %}
-                                                                    <option value="{{ document.titre }}">{{ document.titre }}</option>
+                                                                {% if document._id != emprunt.document_emprunte._id %}
+                                                                    {% if document.disponibilite == 'disponible' %}
+                                                                        <option value="{{ document._id }}">{{ document.titre }}</option>
+                                                                    {% endif %}
                                                                 {% endif %}
                                                             {% endfor %}
                                                         </select>
+                                                        
+                                                        
                                                     </div>
                                                 </div>
 
@@ -209,37 +214,35 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-    const filterInputs = document.querySelectorAll('.filter-input');
-    const tbody = document.getElementById('emprunts_tbody');
+                const filterInputs = document.querySelectorAll('.filter-input');
+                const tbody = document.getElementById('emprunts_tbody');
 
-    // Ajoute un écouteur d'événement sur chaque champ de filtre
-    filterInputs.forEach(input => {
-        input.addEventListener('input', function () {
-            const filters = {
-                abonne: document.getElementById('filter_abonne').value.toLowerCase(),
-                document: document.getElementById('filter_document').value.toLowerCase(),
-                date_emprunt: document.getElementById('filter_date_emprunt').value,
-                date_retour: document.getElementById('filter_date_retour').value,
-                statut: document.getElementById('filter_statut').value.toLowerCase(),
-            };
+                // Ajoute un écouteur d'événement sur chaque champ de filtre
+                filterInputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        const filters = {
+                            abonne: document.getElementById('filter_abonne').value.toLowerCase(),
+                            document: document.getElementById('filter_document').value.toLowerCase(),
+                            date_emprunt: document.getElementById('filter_date_emprunt').value,
+                            date_retour: document.getElementById('filter_date_retour').value,
+                            statut: document.getElementById('filter_statut').value.toLowerCase(),
+                        };
 
-            // Parcourt toutes les lignes du tableau
-            Array.from(tbody.rows).forEach(row => {
-                const cells = row.cells;
-                const matches = [
-                    !filters.abonne || cells[0].textContent.toLowerCase().includes(filters.abonne),
-                    !filters.document || cells[1].textContent.toLowerCase().includes(filters.document),
-                    !filters.date_emprunt || cells[2].textContent === filters.date_emprunt,
-                    !filters.date_retour || cells[3].textContent === filters.date_retour,
-                    !filters.statut || cells[4].textContent.toLowerCase().includes(filters.statut),
-                ];
+                        Array.from(tbody.rows).forEach(row => {
+                            const cells = row.cells;
+                            const matches = [
+                                !filters.abonne || cells[0].textContent.toLowerCase().includes(filters.abonne),
+                                !filters.document || cells[1].textContent.toLowerCase().includes(filters.document),
+                                !filters.date_emprunt || cells[2].textContent === filters.date_emprunt,
+                                !filters.date_retour || cells[3].textContent === filters.date_retour,
+                                !filters.statut || cells[4].textContent.toLowerCase().includes(filters.statut),
+                            ];
 
-                // Affiche ou masque la ligne en fonction des conditions
-                row.style.display = matches.every(Boolean) ? '' : 'none';
+                            row.style.display = matches.every(Boolean) ? '' : 'none';
+                        });
+                    });
+                });
             });
-        });
-    });
-});
 
         </script>
 
