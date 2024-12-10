@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+   <html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <!--=============== REMIXICONS ===============-->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css" crossorigin="">
+      <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+      <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+      <title>Login</title>
+      <link rel="icon" href="../Static/images/book2.png" type="image/x-icon">
+      <link rel="stylesheet" href="../Static/css/style.css">
+
+      <style>
+        
+     </style>
+   </head>
+   
+   <body>
+        <div class="categorie-title">
+            <span class="span-category">Login</span>
+        </div>
+
+        <div class="login">
+            {% if error %}
+                <div style="color: red; text-align: center;">{{ error }}</div>
+            {% endif %}
+        
+            <form action="/" method="POST" class="login__form" enctype="multipart/form-data">
+                <div class="login__inputs">
+                    <div class="login__box">
+                        <input type="email" placeholder="Email" required class="login__input" id="email" name="email" value="">
+                        <i class="ri-mail-fill"></i>
+                    </div>
+                    <div class="login__box">
+                        <input type="password" placeholder="Password" required class="login__input" id="password" name="password" value="">
+                        <i class="ri-lock-2-fill"></i>
+                    </div>
+                </div>
+                <button type="submit" class="login__button">Login</button>
+            </form>
+        </div>
+   </body>
+</html>

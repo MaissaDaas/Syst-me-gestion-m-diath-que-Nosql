@@ -2,11 +2,30 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__,static_folder='frontend/Static',template_folder='frontend/Templates')
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client["mybase"]
+
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    error = None
+
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        user = db.admin.find_one({"email": email})        
+        
+        if user and user['password'] == password:  # Utilisez une comparaison simple si les mots de passe ne sont pas hachés
+            return redirect(url_for('home'))
+
+        else:
+            error = "Email ou mot de passe invalide"
+
+    return render_template('Login.html', error=error)
 
 @app.route('/dashboard')
 def home():
@@ -175,10 +194,43 @@ def addCatalogues():
 
 @app.route('/emprunts')
 def emprunts():
-    emprunts = list(db.Emprunts.find({}, {"_id": 0})) 
-    abonnes = list(db.abonne.find({}, {"_id": 0, "nom": 1, "prenom": 1}))
-    documents = list(db.Catalogues.find({}, {"_id": 1, "titre": 1, "disponibilite": 1}))
-    return render_template('Emprunts.html', emprunts=emprunts, abonnes=abonnes, documents=documents)
+    date_filter = request.args.get('date_filter', None)
+
+    emprunts = list(db.Emprunts.find({}, {"_id": 0}))
+    emprunts = [e for e in emprunts if 'abonne' in e or 'document_emprunte' in e]
+    
+    if date_filter == 'asc':
+        emprunts.sort(key=lambda x: x.get('date_emprunt', ''))
+    elif date_filter == 'desc':
+        emprunts.sort(key=lambda x: x.get('date_emprunt', ''), reverse=True)
+
+    retour_filter = request.args.get('retour_filter', None)
+    if retour_filter == 'asc':
+        emprunts.sort(key=lambda x: x.get('date_retour_prevue', ''))
+    elif retour_filter == 'desc':
+        emprunts.sort(key=lambda x: x.get('date_retour_prevue', ''), reverse=True)
+
+    # Récupérer les abonnés et les catalogues
+    Abonne = list(db.abonne.find({}, {"_id": 1, "nom": 1, "prenom": 1}))
+    Catalogue = list(db.Catalogues.find({}, {"_id": 1, "titre": 1, "disponibilite": 1}))
+    
+    # Ajouter les informations de document_emprunte si elles ne sont pas complètes
+    for emprunt in emprunts:
+        if 'document_emprunte' in emprunt:
+            doc_id = emprunt['document_emprunte']['_id']
+            document = db.Catalogues.find_one({"_id": doc_id}, {"_id": 1, "titre": 1})
+            if document:
+                emprunt['document_emprunte'] = document
+
+    # Retourner le rendu du modèle avec les données nécessaires
+    return render_template(
+        'Emprunts.html', 
+        emprunts=emprunts, 
+        Abonnes=Abonne, 
+        Catalogues=Catalogue,
+        selected_filter=date_filter,
+        selected_retour_filter=retour_filter
+    )
 
 @app.route('/delete_emprunt/<code_emprunt>', methods=['POST'])
 def delete_emprunt(code_emprunt):

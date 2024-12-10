@@ -38,27 +38,6 @@
                 border: 2px solid #FF9800; 
                 background: rgba(255, 152, 0, 0.05);  
             }
-
-            .filter-form {
-                margin-bottom: .3rem;
-            }
-
-            .filter-form select {
-                padding: 0.5rem;
-                border: 1px solid #ececef;
-                border-radius: 5px;
-                border-radius: 0.25rem;
-                box-sizing: border-box;
-                color: #677483;
-                transition: border-color 0.3s ease; 
-                margin-top: .4rem;
-            }
-
-            .filter-form select:hover,
-            .filter-form select:focus {
-            border-color: #7380ec; 
-            }
-
         </style>    
     </head>
     <body>
@@ -98,35 +77,12 @@
                     <table id="abonnesTable">
                         <thead>
                             <tr>
-                                <th>Abonne</th>
+                                <th>Abonne
+                                    <!-- <input type="text" id="filter_abonne" class="filter-input" placeholder="Filtrer par abonné" /> -->
+                                </th>
                                 <th>Document Emprunté</th>
-                                <th style="padding-bottom: 0;">Date d'emprunt
-                                    <form action="/emprunts" method="GET" class="filter-form">
-                                        <select id="date_filter" name="date_filter" onchange="this.form.submit()">
-                                            <option value="" disabled selected>Choisir une option</option>
-                                            <option value="asc" {% if selected_filter == 'asc' %}selected{% endif %}>
-                                                Date la plus ancienne
-                                            </option>
-                                            <option value="desc" {% if selected_filter == 'desc' %}selected{% endif %}>
-                                                Date la plus récente
-                                            </option>
-                                        </select>
-                                    </form>  
-                                </th>
-
-                                <th style="padding-bottom: 0;">Date de retour prévue
-                                    <form action="/emprunts" method="GET" class="filter-form">
-                                        <select id="retour_filter" name="retour_filter" onchange="this.form.submit()">
-                                            <option value="" disabled selected>Choisir une option</option>
-                                            <option value="asc" {% if selected_retour_filter == 'asc' %}selected{% endif %}>
-                                                Date la plus ancienne
-                                            </option>
-                                            <option value="desc" {% if selected_retour_filter == 'desc' %}selected{% endif %}>
-                                                Date la plus récente
-                                            </option>
-                                        </select>
-                                    </form>
-                                </th>
+                                <th>Date d'emprunt</th>
+                                <th>Date de retour prévue</th>
                                 <th>Statut de l'emprunt</th>
                                 <th></th>
                             </tr>
@@ -135,21 +91,8 @@
                         <tbody>
                             {% for emprunt in emprunts %}
                             <tr>
-                                <td>
-                                    {% if emprunt.abonne %}
-                                        {{ emprunt.abonne.nom }} {{ emprunt.abonne.prenom }}
-                                    {% else %}
-                                        Non disponible
-                                    {% endif %}
-                                </td>
-                                
-                                <td>
-                                    {% if emprunt.document_emprunte %}
-                                        {{ emprunt.document_emprunte.titre }}
-                                    {% else %}
-                                        Non disponible
-                                    {% endif %}
-                                </td>
+                                <!-- <td>{{ emprunt.abonne.nom }} {{ emprunt.abonne.prenom }}</td> -->
+                                <!-- <td>{{ emprunt.document_emprunte.titre }}</td> -->
                                 <td>{{ emprunt.date_emprunt }}</td>
                                 <td>{{ emprunt.date_retour }}</td>
                                 <td>
@@ -181,7 +124,7 @@
                                     </div>
 
                                     <!-- ******************************edit modal******************* -->
-                                    <div class="modal" id="modal_{{ emprunt.code_emprunt }}">
+                                    <!-- <div class="modal" id="modal_{{ emprunt.code_emprunt }}">
                                         <div class="modal-content">
                                             <span class="close">&times;</span>
                                             <h1>Modifier Emprunt</h1>
@@ -191,20 +134,13 @@
                                                     <div class="add__box">
                                                         <h3 class="add_h_edit">Abonné</h3>
                                                         <select class="add__input" id="abonne" name="abonne" required>
-                                                            <!-- Option actuelle sélectionnée par défaut -->
-                                                            <option value="{{ emprunt.abonne._id }}" selected>
-                                                                {{ emprunt.abonne.nom }} {{ emprunt.abonne.prenom }}
-                                                            </option>
-                                                            <!-- Liste des autres abonnés -->
-                                                            {% for abonne in Abonnes %}
+                                                            <option value="{{ emprunt.abonne._id }}" selected>{{ emprunt.abonne.nom }} {{ emprunt.abonne.prenom }}</option>
+                                                            {% for abonne in abonnes %}
                                                                 {% if abonne._id != emprunt.abonne._id %}
-                                                                    <option value="{{ abonne._id }}">
-                                                                        {{ abonne.nom }} {{ abonne.prenom }}
-                                                                    </option>
+                                                                    <option value="{{ emprunt.abonne._id }}">{{ abonne.nom }} {{ abonne.prenom }}</option>
                                                                 {% endif %}
                                                             {% endfor %}
                                                         </select>
-                                                        
     
                                                     </div>
                                                 </div>
@@ -213,19 +149,16 @@
                                                     <div class="add__box">
                                                         <h3 class="add_h_edit">Document Emprunté</h3>
                                                         <select class="add__input" id="document_emprunte" name="document_emprunte" required>
-                                                            <!-- Option actuelle sélectionnée par défaut -->
-                                                            <option value="{{ emprunt.document_emprunte._id }}" selected>
-                                                                {{ emprunt.document_emprunte.titre }}
-                                                            </option>
-                                                            <!-- Liste des autres documents disponibles -->
-                                                            {% for document in Catalogues %}
-                                                                {% if document._id != emprunt.document_emprunte._id and document.disponibilite == 'disponible' %}
-                                                                    <option value="{{ document._id }}">
-                                                                        {{ document.titre }}
-                                                                    </option>
+                                                            <option value="{{ emprunt.document_emprunte._id }}" selected>{{ emprunt.document_emprunte.titre }}</option>
+                                                            {% for document in documents %}
+                                                                {% if document._id != emprunt.document_emprunte._id %}
+                                                                    {% if document.disponibilite == 'disponible' %}
+                                                                        <option value="{{ document._id }}">{{ document.titre }}</option>
+                                                                    {% endif %}
                                                                 {% endif %}
                                                             {% endfor %}
-                                                        </select>                                                        
+                                                        </select>
+                                                        
                                                         
                                                     </div>
                                                 </div>
@@ -264,8 +197,8 @@
                                             </form>
                                             
                                         </div>
-                                    </div>
-                            
+                                    </div> -->
+                                
                                 </td>
                             </tr>
                         {% endfor %}
@@ -279,7 +212,39 @@
             </div>
         </div>
 
-       
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const filterInputs = document.querySelectorAll('.filter-input');
+                const tbody = document.getElementById('emprunts_tbody');
+
+                // Ajoute un écouteur d'événement sur chaque champ de filtre
+                filterInputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        const filters = {
+                            abonne: document.getElementById('filter_abonne').value.toLowerCase(),
+                            document: document.getElementById('filter_document').value.toLowerCase(),
+                            date_emprunt: document.getElementById('filter_date_emprunt').value,
+                            date_retour: document.getElementById('filter_date_retour').value,
+                            statut: document.getElementById('filter_statut').value.toLowerCase(),
+                        };
+
+                        Array.from(tbody.rows).forEach(row => {
+                            const cells = row.cells;
+                            const matches = [
+                                !filters.abonne || cells[0].textContent.toLowerCase().includes(filters.abonne),
+                                !filters.document || cells[1].textContent.toLowerCase().includes(filters.document),
+                                !filters.date_emprunt || cells[2].textContent === filters.date_emprunt,
+                                !filters.date_retour || cells[3].textContent === filters.date_retour,
+                                !filters.statut || cells[4].textContent.toLowerCase().includes(filters.statut),
+                            ];
+
+                            row.style.display = matches.every(Boolean) ? '' : 'none';
+                        });
+                    });
+                });
+            });
+
+        </script>
 
         <script src="../Static/js/script.js"></script>
     </body>

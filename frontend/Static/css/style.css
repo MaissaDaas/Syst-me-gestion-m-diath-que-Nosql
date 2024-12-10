@@ -58,6 +58,110 @@ body{
   font-family: 'Poppins', sans-serif;
 }
 
+/*=============== LOGIN ===============*/
+.login {
+  position: relative;
+  height: auto;
+  margin-top: 1vw;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 15vw;
+}
+
+.categorie-title{
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  text-align: center;
+  height: 8vw; 
+  padding-top: 5vw;
+}
+
+.categorie-title .span-category{
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  text-align: center;
+  font-size: 2.6vw; 
+  font-family:"Lexend", Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clr-dark);
+}
+
+.login__form {
+  position: relative;
+  margin-inline: .5rem;
+  padding: 3.5rem 3.5rem;
+  color: var(--clr-dark);
+  backdrop-filter: blur(16px);
+  height: 535px;
+  width: 30rem;
+  border-radius: 2rem;
+  margin-top: 0;
+  padding-bottom: 0;
+  transition: all .3s ease;
+}
+
+.login__inputs, 
+.login__box {
+  display: grid;
+  margin-bottom: 0.5rem;
+}
+
+.login__inputs {
+  row-gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.login__box {
+  grid-template-columns: 1fr max-content;
+  column-gap: .5rem;
+  align-items: center;
+  border: 0.3px solid #7d8da1;
+  padding-inline: 1.25rem;
+  border-radius: 2rem;
+  height: 3rem;
+}
+
+.login__input, 
+.login__button {
+  border: none;
+  outline: none;
+}
+
+.login__input {
+  width: 90%;
+  background: none;
+  color: var(--clr-dark);
+  padding-block: 1rem;
+}
+
+.login__input::placeholder {
+  color: var(--clr-dark);
+}
+
+.login__box i {
+  font-size: 1.5rem;
+}
+
+.login__button {
+  width: 100%;
+  padding: .7rem;
+  margin-bottom: 1rem;
+  background-color: #4b9a94;
+  border-radius: 4rem;
+  color: var(--clr-white);
+  font-weight: 600;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* ********************************************** */
 .container  {
   display: grid;
   width: 96%;
