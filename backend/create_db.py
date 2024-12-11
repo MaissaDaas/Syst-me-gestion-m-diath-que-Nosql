@@ -2,18 +2,18 @@ from pymongo import MongoClient
 
 client = MongoClient("mongodb://localhost:27017/")
 
-db_name = "mybase"
+db_name = "testbase"
 db = client[db_name]
 
-# db.abonne.insert_one({
-#     "nom": "maissa", 
-#     "prenom": "daas", 
-#     "adresse": "test", 
-#     "email": "test@gmail.com",
-#     "date_inscription": "19/11/2024", 
-#     "liste_emprunt_cours": "test", 
-#     "historique_emprunt": "test"
-# })
+db.abonne.insert_one({
+    "nom": "maissa", 
+    "prenom": "daas", 
+    "adresse": "test", 
+    "email": "test@gmail.com",
+    "date_inscription": "19/11/2024", 
+    "liste_emprunt_cours": "test", 
+    "historique_emprunt": "test"
+})
 
 # db.Catalogues.insert_one({
 #     "titre": "Test", 
@@ -31,9 +31,9 @@ db = client[db_name]
 #     "statut_emprunt": "Test"
 # })
 
-db.admin.insert_one({
-    "email": "admin@gmail.com", 
-    "password": "admin"
-})
+# db.admin.insert_one({
+#     "email": "admin@gmail.com", 
+#     "password": "admin"
+# })
 
 print(f"Database '{db_name}' created successfully with a sample documents.")
