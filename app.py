@@ -45,6 +45,14 @@ def abonnees():
     tous_les_emprunts = list(db.Emprunts.find({}, {"_id": 0}))
     print("Tous les emprunts récupérés :", tous_les_emprunts)
 
+    Inscription_filter = request.args.get('Inscription_filter', None)
+
+    print("Inscription_filter:", Inscription_filter)
+    if Inscription_filter == 'asc':
+        abonnes.sort(key=lambda x: x.get('date_inscription', ''))
+    elif Inscription_filter == 'desc':
+        abonnes.sort(key=lambda x: x.get('date_inscription', ''), reverse=True)
+
     emprunts_par_abonne = {}
     for emprunt in tous_les_emprunts:
         abonne = emprunt.get("abonne", {})
@@ -75,7 +83,7 @@ def abonnees():
     document_emprunte = request.args.get('document_emprunte')
     emprunt_details = db.Emprunts.find_one({"document_emprunte": document_emprunte}) if document_emprunte else None
 
-    return render_template('Abonnees.html', abonnes=abonnes, emprunt_details=emprunt_details)
+    return render_template('Abonnees.html', abonnes=abonnes, emprunt_details=emprunt_details, selected_Inscription_filter=Inscription_filter)
 
 
 @app.route('/delete_abonne/<email>', methods=['POST'])
@@ -138,11 +146,36 @@ def update_abonne(email):
 @app.route('/catalogues')  
 def catalogues():
     catalogues = list(db.Catalogues.find({}, {"_id": 0})) 
-    return render_template('Catalogue.html', catalogues=catalogues)
+
+    publication_filter = request.args.get('publication_filter', None)
+    disponible_filter = request.args.get('disponible_filter', None)
+
+    if disponible_filter:
+        if disponible_filter == 'disponible':
+            # Filtrer les catalogues disponibles (exemple : ceux qui ne sont pas en retard)
+            catalogues = [doc for doc in catalogues if doc.get('disponibilite') == 'disponible']
+        elif disponible_filter == 'indisponible':
+            # Filtrer les catalogues indisponibles (en retard)
+            catalogues = [doc for doc in catalogues if doc.get('disponibilite') == 'indisponible']
+    
+    print("publication_filter:", publication_filter)
+    if publication_filter == 'asc':
+        catalogues.sort(key=lambda x: x.get('date_publication', ''))
+    elif publication_filter == 'desc':
+        catalogues.sort(key=lambda x: x.get('date_publication', ''), reverse=True)
+
+    
+    return render_template('Catalogue.html', catalogues=catalogues, selected_publication_filter=publication_filter,selected_disponible=disponible_filter)
 
 @app.route('/delete_catalogue/<titre>', methods=['POST'])
 def delete_catalogue(titre):
     result = db.Catalogues.delete_one({"titre": titre})
+    
+    # Vérifie si la disponibilité est "disponible"
+    # if result.get('disponibilite') == 'disponible':
+    #     return "Impossible de supprimer un catalogue disponible.", 400
+    
+    # Si la disponibilité n'est pas "disponible", procéder à la suppression
     
     if result.deleted_count == 0:
         return "Aucun abonné trouvé avec cet titre.", 404
@@ -195,20 +228,37 @@ def addCatalogues():
 @app.route('/emprunts')
 def emprunts():
     date_filter = request.args.get('date_filter', None)
+    retour_filter = request.args.get('retour_filter', None)
+    statut_filter = request.args.get('statut_filter')
+    abonne_filter = request.args.get('abonne_filter', '').strip().lower() 
+    document_filter = request.args.get('document_filter', '').strip().lower()
 
     emprunts = list(db.Emprunts.find({}, {"_id": 0}))
     emprunts = [e for e in emprunts if 'abonne' in e or 'document_emprunte' in e]
     
+    if abonne_filter:
+        emprunts = [e for e in emprunts if e.get('abonne', {}).get('nom', '').strip().lower().find(abonne_filter) != -1 or e.get('abonne', {}).get('prenom', '').strip().lower().find(abonne_filter) != -1]
+    
+    if document_filter:
+        emprunts = [e for e in emprunts if e.get('document_emprunte', {}).get('titre', '').strip().lower().find(document_filter) != -1]
+
+
+    print("date_filter:", retour_filter)
     if date_filter == 'asc':
         emprunts.sort(key=lambda x: x.get('date_emprunt', ''))
     elif date_filter == 'desc':
         emprunts.sort(key=lambda x: x.get('date_emprunt', ''), reverse=True)
 
-    retour_filter = request.args.get('retour_filter', None)
+    print("retour_filter:", retour_filter)
     if retour_filter == 'asc':
-        emprunts.sort(key=lambda x: x.get('date_retour_prevue', ''))
+        emprunts.sort(key=lambda x: x.get('date_retour', ''))
     elif retour_filter == 'desc':
-        emprunts.sort(key=lambda x: x.get('date_retour_prevue', ''), reverse=True)
+        emprunts.sort(key=lambda x: x.get('date_retour', ''), reverse=True)
+
+    if statut_filter:
+        statut_filter = statut_filter.strip().lower()
+        emprunts = [e for e in emprunts if e.get('statut_emprunt', '').strip().lower() == statut_filter]
+
 
     # Récupérer les abonnés et les catalogues
     Abonne = list(db.abonne.find({}, {"_id": 1, "nom": 1, "prenom": 1}))
@@ -229,7 +279,10 @@ def emprunts():
         Abonnes=Abonne, 
         Catalogues=Catalogue,
         selected_filter=date_filter,
-        selected_retour_filter=retour_filter
+        selected_retour_filter=retour_filter,
+        selected_statut=statut_filter,
+        selected_abonne_filter=abonne_filter,  
+        selected_document_filter=document_filter 
     )
 
 @app.route('/delete_emprunt/<code_emprunt>', methods=['POST'])
@@ -272,6 +325,23 @@ def update_emprunt(code_emprunt):
         return jsonify({"error": "Abonne introuvable"}), 404
     if not document:
         return jsonify({"error": "Document introuvable"}), 404
+
+    if date_retour:
+        try:
+            date_retour_obj = datetime.strptime(date_retour, "%Y-%m-%d")  # Formatez la date selon votre format
+        except ValueError:
+            return jsonify({"error": "Invalid date format"}), 400
+    else:
+        date_retour_obj = None
+
+    # Comparer la date de retour avec la date actuelle
+    current_date = datetime.now()
+
+    # Si la date de retour est dans le passé, mettre à jour le statut
+    if date_retour_obj and date_retour_obj < current_date:
+        statut_emprunt = "Retardé"
+    else:
+        statut_emprunt = "En cours"
 
     db.Emprunts.update_one(
         {"code_emprunt": code_emprunt},

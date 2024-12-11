@@ -1347,6 +1347,58 @@ MEDIA QUERY
 }
 
 /********************************/
+
+.filter-form {
+  margin-bottom: .3rem;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-input{
+  margin-bottom: .3rem;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.filter-form select {
+  padding: 0.5rem;
+  border: 1px solid #ececef;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+  color: #677483;
+  transition: border-color 0.3s ease; 
+  margin-top: .4rem;
+  display: flex;
+  text-align: start;
+  justify-content: center;
+  align-items: center;
+}
+
+.filter-input {
+  background-color: #fff;
+  padding: 0.5rem;
+  border: 1px solid #ececef;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+  color: #677483;
+  transition: border-color 0.3s ease; 
+  margin-top: .4rem;
+  display: flex;
+  text-align: start;
+  justify-content: center;
+  align-items: center;
+  width: 7.5rem;
+}
+
+.filter-form select:hover,
+.filter-form select:focus {
+border-color: #7380ec; 
+}
+
 .liste-td {
   padding: 10px;
 }
@@ -1358,7 +1410,8 @@ MEDIA QUERY
 }
 
 .liste-li {
-  background-color: var(--clr-color-background);
+  background-color: var(--clr-primary);
+  color: var(--clr-background);
   margin: 5px 0;
   padding: 5px;
   border-radius: 4px;
@@ -1370,7 +1423,7 @@ MEDIA QUERY
 }
 
 .liste-li:hover {
-  background-color: #dcdcdc;
+  background-color: var(--clr-danger);
   cursor: pointer;
 }
 
