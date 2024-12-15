@@ -174,7 +174,7 @@
                                     <div class="modal" id="modal_{{ catalogue.titre }}">
                                         <div class="modal-content">
                                             <span class="close">&times;</span>
-                                            <h1>Modifier Catalogue</h1>
+                                            <h1>Modifier Livre</h1>
 
                                             <form  action="/update_catalogue/{{ catalogue.titre }}" method="POST" class="add_form">
                                                 <div class="add__inputs">
@@ -242,7 +242,7 @@
               
               Swal.fire({
                 title: 'Êtes-vous sûr ?',
-                text: "Cette action est irréversible !",
+                text: "Supprimer un livre !",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',

@@ -8,6 +8,16 @@
         <link rel="icon" href="../Static/images/book2.png" type="image/x-icon">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
         <link rel="stylesheet" href="../Static/css/style.css">
+    <style>
+        .chart-container {
+            display: flex;
+            justify-content: space-around;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+    </style>
+    
     </head>
     <body>
         <div class="container">
@@ -54,13 +64,229 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="charts" style="margin-bottom: 5rem;">
+                    <h1 style="margin: 2rem 0 1rem 0;">Statistiques</h1>
+                    
+                    <div class="chart-container">
+                       
+                        <div class="graphe">
+                            <h2 class="titre_graphe">Graphique des emprunts par statut</h2>
+                            <canvas id="empruntStatutChart" style=" height: 300px;"  width="350" height="300"></canvas>
+                        </div>
+
+                        <div class="graphe">
+                            <h2 class="titre_graphe">Les livres les plus empruntés</h2>
+                            <canvas id="livresEmpruntesChart" style=" height: 100px; width: 100px; padding-bottom: 3rem;" width="100" height="100"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-container" style="margin-top: 2rem;">
+                       
+                        <div class="graphe">
+                            <h2 class="titre_graphe">quantités des emprunts par abonné</h2>
+                            <canvas id="empruntsAbonneChart" style="height: 300px;"  width="350" height="300"></canvas>
+                        </div>
+                    
+                        <div class="graphe">
+                            <h2 class="titre_graphe">Disponibilité des livres</h2>
+                            <canvas id="disponibiliteLivresChart" style="height: 300px;"  width="350" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                
             </main>
 
             <div>
                 {% include 'Navbar.html' %}
             </div>
         </div>
+        
+        <script>   
+            document.addEventListener("DOMContentLoaded", function () {
+                // Données des abonnés par mois
+                const abonnés_mois = JSON.parse('{{ abonnés_mois | tojson | safe }}');
+                const emprunts_par_statut = JSON.parse('{{ emprunts_par_statut | tojson | safe }}');
+                
+                // Graphique des livres les plus empruntés
+                const titres_livres = JSON.parse('{{ titres_livres | tojson | safe }}');
+                const emprunts_livres = JSON.parse('{{ emprunts_livres | tojson | safe }}');
 
+                console.log("Titres des livres:", titres_livres);
+                console.log("Emprunts des livres:", emprunts_livres);
+
+                const livresEmpruntesData = {
+                    labels: titres_livres,
+                    datasets: [{
+                        label: "Livres les plus empruntés",
+                        data: emprunts_livres,
+                        backgroundColor: [
+                            "#ff7782 ",
+                            "#7380ec",
+                            "#41f1b6",
+                            "coral",
+                            "rgba(153, 102, 255, 0.8)"
+                        ],
+                        borderWidth: 1
+                    }]
+                };
+
+                const livresEmpruntesConfig = {
+                    type: 'doughnut',
+                    data: livresEmpruntesData,
+                    options: {
+                        responsive: true,
+                        cutoutPercentage: 20,  
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                enabled: true
+                            }
+                        }
+                    }
+                };
+
+                new Chart(document.getElementById('livresEmpruntesChart'), livresEmpruntesConfig);
+
+
+                const abonneData = {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [{
+                        label: "Abonnés par mois",
+                        data: abonnés_mois,
+                        backgroundColor: "rgba(75, 192, 192, 0.2)",
+                        borderColor: "rgba(75, 192, 192, 1)",
+                        borderWidth: 1
+                    }]
+                };
+
+                const abonneConfig = {
+                    type: 'bar',
+                    data: abonneData,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                };
+
+                new Chart(document.getElementById('abonneChart'), abonneConfig);
+
+                // New chart showing emprunts by statut
+                const empruntStatutData = {
+                    labels: Object.keys(emprunts_par_statut),
+                    datasets: [{
+                        label: "Emprunts par statut",
+                        data: Object.values(emprunts_par_statut),
+                        backgroundColor: ["#9e9e9e", "#41f1b6", "#7380ec","#ff7782"],
+                        borderColor: ["#9e9e9e", "#41f1b6","#7380ec", "#ff7782"],
+                        borderWidth: 2
+                    }]
+                };
+
+                const empruntStatutConfig = {
+                    type: 'bar', // Or 'pie' for pie chart
+                    data: empruntStatutData,
+                    options: {
+                        responsive: true
+                    }
+                };
+
+                new Chart(document.getElementById('empruntStatutChart'), empruntStatutConfig);
+
+               // Disponibilité des livres
+                const livresDisponibles = JSON.parse('{{ livres_disponibles | tojson | safe }}'); 
+                const titresLivresDisponibles = Object.keys(livresDisponibles);
+                const quantitesDisponibles = Object.values(livresDisponibles);  
+
+                // Graphique de la disponibilité des livres (barres horizontales)
+                const disponibiliteLivresData = {
+                    labels: titresLivresDisponibles,
+                    datasets: [{
+                        label: "Disponibilité des Livres",
+                        data: quantitesDisponibles,  
+                        backgroundColor: "#41f1b6",
+                        borderWidth: 1
+                    }]
+                };
+
+                const disponibiliteLivresConfig = {
+                    type: 'bar',  
+                    data: disponibiliteLivresData,
+                    options: {
+                        responsive: true,
+                        indexAxis: 'y',  // Barres horizontales
+                        scales: {
+                            x: {
+                                beginAtZero: true,  // Démarre à zéro
+                                ticks: {
+                                    stepSize: 1  // Intervalle de 1 pour les quantités
+                                }
+                            },
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.label + ': ' + tooltipItem.raw + ' livre(s) disponible(s)';
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                anchor: 'end',  // Positionner les étiquettes à la fin des barres
+                                align: 'end',   // Alignement des étiquettes
+                                color: 'black', // Couleur du texte
+                                formatter: function(value) {
+                                    return value + ' livre(s)';
+                                }
+                            }
+                        }
+                    }
+                };
+
+                new Chart(document.getElementById('disponibiliteLivresChart'), disponibiliteLivresConfig);
+
+                const abonnés = JSON.parse('{{ abonnés | tojson | safe }}');  // Liste des abonnés
+                const empruntsParAbonne = abonnés.map(abonne => abonne.emprunts_count); // Nombre d'emprunts par abonné
+
+                // Graphique des emprunts par abonné
+                const empruntsAbonneData = {
+                    labels: abonnés.map(abonne => abonne.nom),  // Utilisez le nom des abonnés
+                    datasets: [{
+                        label: "Emprunts",
+                        data: empruntsParAbonne,
+                        backgroundColor: "#7380ec",
+                        borderWidth: 1
+                    }]
+                };
+
+                const empruntsAbonneConfig = {
+                    type: 'bar',
+                    data: empruntsAbonneData,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                };
+                new Chart(document.getElementById('empruntsAbonneChart'), empruntsAbonneConfig);
+
+            });
+
+        </script>
+        
         <script src="../Static/js/script.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
     </body>
 </html>

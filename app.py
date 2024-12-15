@@ -19,7 +19,7 @@ def login():
 
         user = db.admin.find_one({"email": email})        
         
-        if user and user['password'] == password:  # Utilisez une comparaison simple si les mots de passe ne sont pas hachés
+        if user and user['password'] == password:  
             return redirect(url_for('home'))
 
         else:
@@ -27,12 +27,95 @@ def login():
 
     return render_template('Login.html', error=error)
 
+
+# **************************** dashboard  ****************************** 
+
+from collections import defaultdict
+from datetime import datetime
+
 @app.route('/dashboard')
 def home():
+    # Total Abonnés, Catalogues, Emprunts
     total_abonnes = db.abonne.count_documents({}) 
     total_Catalogues = db.Catalogues.count_documents({}) 
     total_Emprunts = db.Emprunts.count_documents({}) 
-    return render_template('Dashboard.html' , total_abonnes=total_abonnes ,  total_Catalogues=total_Catalogues ,  total_Emprunts=total_Emprunts)
+
+    # Calcul des abonnés par mois
+    abonnés_mois = defaultdict(int)
+    abonnés = db.abonne.find()
+    for abonne in abonnés:
+        mois_inscription = abonne.get('date_inscription')
+        if mois_inscription:
+            mois = datetime.strptime(mois_inscription, "%Y-%m-%d").month
+            abonnés_mois[mois] += 1
+    abonnés_mois = [abonnés_mois.get(i, 0) for i in range(1, 13)]  # Remplir avec 0 pour les mois non présents
+
+    # Emprunts par statut
+    emprunts_par_statut = defaultdict(int)
+    emprunts = db.Emprunts.find()
+    for emprunt in emprunts:
+        statut = emprunt.get('statut_emprunt')
+        if statut:
+            emprunts_par_statut[statut] += 1
+    # Re-organizing status data for pie/bar chart
+    emprunts_par_statut = dict(emprunts_par_statut)
+
+    # Calcul des livres les plus empruntés
+    livres_empruntés = defaultdict(int)
+
+    # Recherche des emprunts
+    emprunts = db.Emprunts.find()
+    for emprunt in emprunts:
+        titre_livre = emprunt.get('document_emprunte', {}).get('titre')
+        if titre_livre:
+            livres_empruntés[titre_livre] += 1
+
+
+    livres_les_plus_empruntes = sorted(livres_empruntés.items(), key=lambda x: x[1], reverse=True)
+
+    top_livres = livres_les_plus_empruntes[:5]
+    titres_livres = [livre[0] for livre in top_livres]
+    emprunts_livres = [livre[1] for livre in top_livres]
+
+    # Données des abonnés
+    abonnés = db.abonne.find()
+
+    # Liste pour stocker les résultats
+    emprunts_par_abonne = []
+
+    for abonne in abonnés:
+        # Récupérer les emprunts de chaque abonné
+        emprunts_count = db.Emprunts.count_documents({"abonne._id": abonne["_id"]})
+
+        # Ajouter le résultat à la liste
+        emprunts_par_abonne.append({
+            'nom': abonne.get('nom', 'Nom Inconnu'),
+            'emprunts_count': emprunts_count
+        })
+
+    # Affichage des résultats
+    print(emprunts_par_abonne)
+
+    livres_disponibles = defaultdict(int)  # Utilisation de int pour stocker des quantités disponibles
+    for livre in db.Catalogues.find():
+        titre_livre = livre.get('titre')
+        disponibilite = livre.get('disponibilite', 'indisponible')  # Valeur par défaut si absente
+        if disponibilite == "disponible":
+            livres_disponibles[titre_livre] = 1  # Quantité disponible
+        else:
+            livres_disponibles[titre_livre] = 0  # Indisponible, donc quantité 0
+
+    # Affichage de la variable livres_disponibles dans le terminal
+    print("livres_disponibles:", livres_disponibles)
+    print("emprunts_par_abonne:", emprunts_par_abonne)
+    print("Titres des livres:", titres_livres)
+    print("Emprunts des livres:", emprunts_livres)
+
+    return render_template('Dashboard.html', total_abonnes=total_abonnes, 
+                           total_Catalogues=total_Catalogues, total_Emprunts=total_Emprunts,
+                           abonnés_mois=abonnés_mois, emprunts_par_statut=emprunts_par_statut,
+                           titres_livres=titres_livres, emprunts_livres=emprunts_livres,
+                           abonnés=emprunts_par_abonne, livres_disponibles=livres_disponibles)
 
 
 # **************************** Abonnees  ****************************** 
@@ -170,12 +253,6 @@ def catalogues():
 @app.route('/delete_catalogue/<titre>', methods=['POST'])
 def delete_catalogue(titre):
     result = db.Catalogues.delete_one({"titre": titre})
-    
-    # Vérifie si la disponibilité est "disponible"
-    # if result.get('disponibilite') == 'disponible':
-    #     return "Impossible de supprimer un catalogue disponible.", 400
-    
-    # Si la disponibilité n'est pas "disponible", procéder à la suppression
     
     if result.deleted_count == 0:
         return "Aucun abonné trouvé avec cet titre.", 404
