@@ -12,34 +12,33 @@
       <link rel="icon" href="../Static/images/book2.png" type="image/x-icon">
       <link rel="stylesheet" href="../Static/css/style.css">
 
-      <style>
-        
-     </style>
    </head>
    
-   <body>
-        <div class="categorie-title">
-            <span class="span-category">Login</span>
-        </div>
+   <body style="display: flex;  justify-content: center; align-items: center; text-align: center;">
+        <div class="login-container">
+            <div class="categorie-title">
+                <span class="span-category">Login</span>
+            </div>
 
-        <div class="login">
-            {% if error %}
-                <div style="color: red; text-align: center;">{{ error }}</div>
-            {% endif %}
-        
-            <form action="/" method="POST" class="login__form" enctype="multipart/form-data">
-                <div class="login__inputs">
-                    <div class="login__box">
-                        <input type="email" placeholder="Email" required class="login__input" id="email" name="email" value="">
-                        <i class="ri-mail-fill"></i>
+            <div class="login">
+                {% if error %}
+                    <div style="color: red; text-align: center; padding-bottom:1rem">{{ error }}</div>
+                {% endif %}
+            
+                <form action="/" method="POST" class="login__form" enctype="multipart/form-data">
+                    <div class="login__inputs">
+                        <div class="login__box">
+                            <input type="email" placeholder="Email" required class="login__input" id="email" name="email" value="">
+                            <i class="ri-mail-fill"></i>
+                        </div>
+                        <div class="login__box">
+                            <input type="password" placeholder="Password" required class="login__input" id="password" name="password" value="">
+                            <i class="ri-lock-2-fill"></i>
+                        </div>
                     </div>
-                    <div class="login__box">
-                        <input type="password" placeholder="Password" required class="login__input" id="password" name="password" value="">
-                        <i class="ri-lock-2-fill"></i>
-                    </div>
-                </div>
-                <button type="submit" class="login__button">Login</button>
-            </form>
+                    <button type="submit" class="login__button">Login</button>
+                </form>
+            </div>
         </div>
    </body>
 </html>

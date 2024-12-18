@@ -237,90 +237,82 @@
                                     </div>
 
                                     <!-- ******************************edit modal******************* -->
-                                    <div class="modal" id="modal_{{ emprunt.code_emprunt }}">
-                                        <div class="modal-content">
-                                            <span class="close">&times;</span>
-                                            <h1>Modifier Emprunt</h1>
+<div class="modal" id="modal_{{ emprunt.code_emprunt }}">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h1>Modifier Emprunt</h1>
 
-                                            <form  action="/update_emprunt/{{ emprunt.code_emprunt }}" method="POST" class="add_form">    
-                                                <div class="add__inputs">
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Abonné</h3>
-                                                        <select class="add__input" id="abonne" name="abonne" required>
-                                                            <!-- Option actuelle sélectionnée par défaut -->
-                                                            <option value="{{ emprunt.abonne._id }}" selected>
-                                                                {{ emprunt.abonne.nom }} {{ emprunt.abonne.prenom }}
-                                                            </option>
-                                                            <!-- Liste des autres abonnés -->
-                                                            {% for abonne in Abonnes %}
-                                                                {% if abonne._id != emprunt.abonne._id %}
-                                                                    <option value="{{ abonne._id }}">
-                                                                        {{ abonne.nom }} {{ abonne.prenom }}
-                                                                    </option>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </select>
-                                                        
-    
-                                                    </div>
-                                                </div>
+        <form action="/update_emprunt/{{ emprunt.code_emprunt }}" method="POST" class="add_form">    
+            <div class="add__inputs">
+                <div class="add__box">
+                    <h3 class="add_h_edit">Abonné</h3>
+                    <select class="add__input" id="abonne" name="abonne" required>
+                        <option value="{{ emprunt.abonne._id }}" selected>
+                            {{ emprunt.abonne.nom }} {{ emprunt.abonne.prenom }}
+                        </option>
+                        {% for abonne in Abonnes %}
+                            {% if abonne._id != emprunt.abonne._id %}
+                                <option value="{{ abonne._id }}">
+                                    {{ abonne.nom }} {{ abonne.prenom }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
 
-                                                <div class="add__inputs">
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Document Emprunté</h3>
-                                                        <select class="add__input" id="document_emprunte" name="document_emprunte" required>
-                                                            <!-- Option actuelle sélectionnée par défaut -->
-                                                            <option value="{{ emprunt.document_emprunte._id }}" selected>
-                                                                {{ emprunt.document_emprunte.titre }}
-                                                            </option>
-                                                            <!-- Liste des autres documents disponibles -->
-                                                            {% for document in Catalogues %}
-                                                                {% if document._id != emprunt.document_emprunte._id and document.disponibilite == 'disponible' %}
-                                                                    <option value="{{ document._id }}">
-                                                                        {{ document.titre }}
-                                                                    </option>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </select>                                                        
-                                                        
-                                                    </div>
-                                                </div>
+            <div class="add__inputs">
+                <div class="add__box">
+                    <h3 class="add_h_edit">Document Emprunté</h3>
+                    <select class="add__input" id="document_emprunte" name="document_emprunte" required>
+                        <option value="{{ emprunt.document_emprunte._id }}" selected>
+                            {{ emprunt.document_emprunte.titre }}
+                        </option>
+                        {% for document in Catalogues %}
+                            {% if document._id != emprunt.document_emprunte._id and document.disponibilite == 'disponible' %}
+                                <option value="{{ document._id }}">
+                                    {{ document.titre }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
 
-                                                <div class="add__inputs">
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Date d'emprunt</h3>
-                                                        <input type="date" class="add__input" id="date_emprunt" name="date_emprunt"  value="{{ emprunt.date_emprunt }}">
-                                                    </div>
-                                                </div>
+            <div class="add__inputs">
+                <div class="add__box">
+                    <h3 class="add_h_edit">Date d'emprunt</h3>
+                    <input type="date" class="add__input" id="date_emprunt" name="date_emprunt" value="{{ emprunt.date_emprunt }}">
+                </div>
+            </div>
 
-                                                <div class="add__inputs">
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Date de retour de l'emprunt</h3>
-                                                        <input type="date" class="add__input" id="date_retour" name="date_retour"  value="{{ emprunt.date_retour }}">
-                                                    </div>
-                                                </div>
+            <div class="add__inputs">
+                <div class="add__box">
+                    <h3 class="add_h_edit">Date de retour de l'emprunt</h3>
+                    <input type="date" class="add__input" id="date_retour" name="date_retour" value="{{ emprunt.date_retour }}">
+                </div>
+            </div>
 
-                                                <div class="add__inputs">
-                                                    <div class="add__box">
-                                                        <h3 class="add_h_edit">Statut de l'emprunt</h3>
-                                                        <select class="add__input" id="statut_emprunt" name="statut_emprunt" required value="{{ emprunt.statut_emprunt }}">
-                                                            <option value="{{ emprunt.statut_emprunt }}" selected>{{ emprunt.statut_emprunt }}</option>
-                                                            <option value="En cours">En cours</option>
-                                                            <option value="Retardé">Retardé</option>
-                                                            <option value="Rendu">Rendu</option>
-                                                            <option value="Annulé">Annulé</option>
-                                                        </select>
-                                                    </div>
-                                                </div>  
+            <div class="add__inputs">
+                <div class="add__box">
+                    <h3 class="add_h_edit">Statut de l'emprunt</h3>
+                    <select class="add__input" id="statut_emprunt" name="statut_emprunt" required>
+                        <option value="En cours" {% if emprunt.statut_emprunt == 'En cours' %} selected {% endif %}>En cours</option>
+                        <option value="Retardé" {% if emprunt.statut_emprunt == 'Retardé' %} selected {% endif %}>Retardé</option>
+                        <option value="Rendu" {% if emprunt.statut_emprunt == 'Rendu' %} selected {% endif %}>Rendu</option>
+                        <option value="Annulé" {% if emprunt.statut_emprunt == 'Annulé' %} selected {% endif %}>Annulé</option>
+                    </select>
+                </div>
+            </div>  
 
-                                                <div class="button-group" style="padding-bottom:10px;">
-                                                    <button type="submit" class="add__button">Modifier</button>
-                                                    <button type="button" class="cancel__button">Annuler</button>
-                                                </div>
-                                            </form>
-                                            
-                                        </div>
-                                    </div>
+            <div class="button-group" style="padding-bottom:10px;">
+                <button type="submit" class="add__button">Modifier</button>
+                <button type="button" class="cancel__button">Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>
+
                             
                                 </td>
                             </tr>

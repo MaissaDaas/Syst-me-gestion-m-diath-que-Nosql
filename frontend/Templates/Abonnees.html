@@ -12,8 +12,19 @@
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">  
         <!-- SweetAlert2 JS -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
 
     <style>
+        .btn-show-more{
+            background-color: #fff;
+            color: #677483;
+        }
+
+        .hidden {
+            display: none;
+        }
+
         .button-checkbox{
             display: flex;
             justify-content: center;
@@ -131,7 +142,7 @@
                                 <td class="liste-td">
                                     {% if abonne.tous_les_emprunts %}
                                     <ul class="liste-ul">
-                                        {% for emprunt in abonne.tous_les_emprunts %}
+                                        {% for emprunt in abonne.tous_les_emprunts[:2] %}
                                         <li class="liste-li">
                                             <span class="toggle-details" 
                                                 data-id="{{ emprunt.document_emprunte.titre }}" 
@@ -143,10 +154,29 @@
                                         </li>
                                         {% endfor %}
                                     </ul>
+                                    {% if abonne.tous_les_emprunts|length > 2 %}
+                                    <button class="btn-show-more" data-id="abonne-{{ abonne.id }}">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                    <ul class="liste-ul hidden" id="extra-emprunts-abonne-{{ abonne.id }}">
+                                        {% for emprunt in abonne.tous_les_emprunts[2:] %}
+                                        <li class="liste-li">
+                                            <span class="toggle-details" 
+                                                data-id="{{ emprunt.document_emprunte.titre }}" 
+                                                data-date-emprunt="{{ emprunt.date_emprunt }}" 
+                                                data-date-retour="{{ emprunt.date_retour }}" 
+                                                data-statut-emprunt="{{ emprunt.statut_emprunt }}">
+                                                {{ emprunt.document_emprunte.titre }}
+                                            </span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
                                     {% else %}
                                         Aucun emprunt
                                     {% endif %}
                                 </td>
+                                
                                 
                                 <td >
                                     <div class="primary">
@@ -157,7 +187,6 @@
                                                     <span class="material-symbols-sharp" style="font-size: 1.5rem; padding-top:.2rem; padding-left:.1rem">create</span>
                                                     <h3>Modifier</h3>
                                                 </button>
-                                                
                                             </div>
 
                                             <div class="action-icons ic3" >
@@ -230,6 +259,25 @@
         </div>
 
         <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll(".btn-show-more").forEach(button => {
+                    button.addEventListener("click", () => {
+                        const abonneId = button.getAttribute("data-id");
+                        const extraEmprunts = document.getElementById(`extra-emprunts-${abonneId}`);
+                        if (extraEmprunts) {
+                            if (extraEmprunts.classList.contains("hidden")) {
+                                extraEmprunts.classList.remove("hidden");
+                                button.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                            } else {
+                                extraEmprunts.classList.add("hidden");
+                                button.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                            }
+                        }
+                    });
+                });
+            });
+
+
             function confirmDeletion(titre) {
               // Empêche la soumission immédiate du formulaire
               event.preventDefault();

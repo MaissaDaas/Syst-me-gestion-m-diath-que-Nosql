@@ -411,14 +411,16 @@ def update_emprunt(code_emprunt):
     else:
         date_retour_obj = None
 
-    # Comparer la date de retour avec la date actuelle
-    current_date = datetime.now()
+    # # Comparer la date de retour avec la date actuelle
+    # current_date = datetime.now()
 
-    # Si la date de retour est dans le passé, mettre à jour le statut
-    if date_retour_obj and date_retour_obj < current_date:
-        statut_emprunt = "Retardé"
-    else:
-        statut_emprunt = "En cours"
+    # # Si la date de retour est dans le passé, mettre à jour le statut
+    # if statut_emprunt == "En cours" and date_retour_obj and date_retour_obj < current_date:
+    #     statut_emprunt = "Retardé"
+    # elif statut_emprunt != "En cours":
+    #     # Si le statut n'est pas "En cours", ne pas mettre à jour le statut
+    #     statut_emprunt = emprunt.get("statut_emprunt", "En cours")  # Conserver le statut actuel si ce n'est pas "En cours"
+
 
     db.Emprunts.update_one(
         {"code_emprunt": code_emprunt},

@@ -1,105 +1,94 @@
-from flask import Blueprint, request, jsonify
+from flask import Flask, Blueprint, request, jsonify
 from pymongo import MongoClient
+from datetime import datetime
 
+# MongoDB Connection
 client = MongoClient("mongodb://localhost:27017/")
 db = client["testbase"]
 
+# Flask App Instance
+app = Flask(__name__)
+
+# Define Blueprint
 abonne_bp = Blueprint('abonne', __name__)
 
+# Routes
+@abonne_bp.route('/abonne', methods=['GET'])
+def get_abonnes():
+    nom = request.args.get('nom')  # Optional filter for 'nom'
+    email = request.args.get('email')  # Optional filter for 'email'
 
-# **************************** Abonnees  ****************************** 
+    # Create the query filter
+    query_filter = {}
+    if nom:
+        query_filter['nom'] = nom
+    if email:
+        query_filter['email'] = email
 
-@app.route('/abonnees')
-def abonnees():
-    abonnes = list(db.abonne.find({}, {"_id": 0}))
-    print("Abonnés récupérés :", abonnes)
+    # Fetch filtered abonnes from the database
+    abonnes = list(db.abonne.find(query_filter, {"_id": 0}))
 
-    tous_les_emprunts = list(db.Emprunts.find({}, {"_id": 0}))
-    print("Tous les emprunts récupérés :", tous_les_emprunts)
-
-    emprunts_par_abonne = {}
-    for emprunt in tous_les_emprunts:
-        abonne = emprunt.get("abonne", {})
-        abonne_nom = f"{abonne.get('nom', '').strip()} {abonne.get('prenom', '').strip()}"
-        
-        if abonne_nom:
-            if abonne_nom not in emprunts_par_abonne:
-                emprunts_par_abonne[abonne_nom] = {"en_cours": [], "tous": []}
-
-            emprunt_data = {
-                "document_emprunte": emprunt.get("document_emprunte"),
-                "date_emprunt": emprunt.get("date_emprunt"),
-                "date_retour": emprunt.get("date_retour"),
-                "statut_emprunt": emprunt.get("statut_emprunt"),
-            }
-            emprunts_par_abonne[abonne_nom]["tous"].append(emprunt_data)
-
-            if emprunt.get("statut_emprunt") == "En cours":
-                emprunts_par_abonne[abonne_nom]["en_cours"].append(emprunt_data)
-
-    for abonne in abonnes:
-        nom_complet = f"{abonne['nom']} {abonne['prenom']}"
-        emprunts = emprunts_par_abonne.get(nom_complet, {"en_cours": [], "tous": []})
-        abonne["emprunts_en_cours"] = emprunts["en_cours"]
-        abonne["tous_les_emprunts"] = emprunts["tous"]
-        print(f"Emprunts pour {nom_complet} - En cours : {abonne['emprunts_en_cours']} - Tous : {abonne['tous_les_emprunts']}")
-
-    document_emprunte = request.args.get('document_emprunte')
-    emprunt_details = db.Emprunts.find_one({"document_emprunte": document_emprunte}) if document_emprunte else None
-
-    return render_template('Abonnees.html', abonnes=abonnes, emprunt_details=emprunt_details)
+    return jsonify(abonnes), 200
 
 
-@app.route('/delete_abonne/<email>', methods=['POST'])
-def delete_abonne(email):
-    result = db.abonne.delete_one({"email": email})
-    
-    if result.deleted_count == 0:
-        return "Aucun abonné trouvé avec cet email.", 404
-    return redirect(url_for('abonnees'))
-
-@app.route('/addabonnees', methods=['GET', 'POST'])
-def addAbonnees():
-    if request.method == 'POST':
-        data = {
-            "nom": request.form.get("nom"),
-            "prenom": request.form.get("prenom"),
-            "email": request.form.get("email"),
-            "adresse": request.form.get("adresse"),
-            "liste_emprunt_cours": request.form.get("liste_emprunt_cours"),
-            "historique_emprunt": request.form.get("historique_emprunt"),
-            "date_inscription": request.form.get("date_inscription")
-        }
-        
-        db.abonne.insert_one(data)
-        
-        return redirect(url_for('abonnees'))    
-    return render_template('AddAbonnees.html')
-
-@app.route('/update_abonne/<email>', methods=['POST'])
+# Route to update an abonne by email
+@abonne_bp.route('/abonne/<email>', methods=['PUT'])
 def update_abonne(email):
-    nom = request.form.get('nom')
-    prenom = request.form.get('prenom')
-    adresse = request.form.get('adresse')
-    liste_emprunt_cours = request.form.get('liste_emprunt_cours')
-    historique_emprunt = request.form.get('historique_emprunt')
-    date_inscription = request.form.get('date_inscription')
+    data = request.json
+    db.abonne.update_one({"email": email}, {"$set": data})
+    return jsonify({"message": "Abonné mis à jour avec succès !"}), 200
 
-    abonne = db.abonne.find_one({"email": email})
-    
-    if not abonne:
-        return jsonify({"error": "Abonné introuvable"}), 404
+# Route to delete an abonne by email
+@abonne_bp.route('/deleteabonne/<email>', methods=['DELETE'])
+def delete_abonne(email):
+    db.abonne.delete_one({"email": email})
+    return jsonify({"message": "Abonné supprimé avec succès !"}), 200
 
-    db.abonne.update_one(
-        {"email": email},
-        {"$set": {
-            "nom": nom,
-            "prenom": prenom,
-            "adresse": adresse,
-            "liste_emprunt_cours": liste_emprunt_cours,
-            "historique_emprunt": historique_emprunt,
-            "date_inscription": date_inscription
-        }}
-    )
+@abonne_bp.route('/addabonne', methods=['POST'])
+def create_abonne():
+    # Get the JSON data from the request
+    data = request.json
 
-    return redirect(url_for('abonnees'))  
+    # Extract the required fields from the JSON data
+    nom = data.get('nom')
+    prenom = data.get('prenom')
+    email = data.get('email')
+    adresse = data.get('adresse')
+    datedinscription = data.get('date_inscription') 
+    historiquedemprunts = data.get('historique_emprunt')
+    listedemprunts = data.get('liste_emprunt_cours')
+
+    # Check if required fields are provided
+    if not nom or not prenom or not email:
+        return jsonify({"error": "Nom, prénom, and email are required fields."}), 400
+
+    # If the 'datedinscription' is provided, convert it to a datetime object (optional)
+    if datedinscription:
+        try:
+            datedinscription = datetime.strptime(datedinscription, '%Y-%m-%d')
+        except ValueError:
+            return jsonify({"error": "Invalid date format for 'datedinscription'. Use YYYY-MM-DD."}), 400
+
+    # Prepare the data to insert into the database
+    abonne_data = {
+        "nom": nom,
+        "prenom": prenom,
+        "email": email,
+        "adresse": adresse,
+        "date_inscription": datedinscription,
+        "historique_emprunt": historiquedemprunts,
+        "liste_emprunt_cours": listedemprunts
+    }
+
+    # Insert into the MongoDB collection
+    db.abonne.insert_one(abonne_data)
+
+    # Return a success message
+    return jsonify({"message": "Abonné créé avec succès !"}), 201
+
+
+# Register the Blueprint with the Flask app
+app.register_blueprint(abonne_bp)
+
+if __name__ == "__main__":
+    app.run(debug=True)
